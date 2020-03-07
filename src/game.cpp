@@ -38,6 +38,16 @@ void drawBoard(){
     }
 }
 
+void drawPieces(){
+    glColor3f(0.0,0.0,1.0);
+    glBegin(GL_QUADS);
+        glVertex2f(4,4);
+        glVertex2f(5,4);
+        glVertex2f(5,5);
+        glVertex2f(4,5);
+    glEnd();
+}
+
 void white_area(int x, int y){
     glColor3f(1.0,1.0,1.0);
     glBegin(GL_QUADS);

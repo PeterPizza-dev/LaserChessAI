@@ -55,6 +55,7 @@ void reshape_callback(int w, int h){
 void Display_callback(){
     glClear(GL_COLOR_BUFFER_BIT);
     drawBoard();
+    drawPieces();
     glutSwapBuffers();
 }
 
