@@ -7,6 +7,7 @@
 
 #include "piece.h"
 #include <math.h>
+
 using namespace std;
 #include <iostream>
 

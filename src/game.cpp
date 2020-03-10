@@ -2,23 +2,32 @@
 #include <stdlib.h>
 #include "game.h"
 
+
 int gridX,gridY;
 
-int play_board[10][10] = 
-    {2,2,2,2,2,2,2,2,2,0,
-     1,0,0,0,0,0,0,0,0,1,
-     0,0,0,0,0,0,0,0,0,0,
-     0,0,0,0,0,0,0,0,0,0,
-     0,0,0,0,0,0,0,0,0,0,
-     0,0,0,0,0,0,0,0,0,0,
-     0,0,0,0,0,0,0,0,0,0,
-     0,0,0,0,0,0,0,0,0,0,
-     2,0,0,0,0,0,0,0,0,2,
-     0,1,1,1,1,1,1,1,1,1};
+int play_board[10][8] = 
+    {{2,2,2,2,2,2,2,0},
+     {1,0,0,0,0,0,0,1},
+     {0,0,0,0,0,0,0,0},
+     {0,0,0,0,0,0,0,0},
+     {0,0,0,0,0,0,0,0},
+     {0,0,0,0,0,0,0,0},
+     {0,0,0,0,0,0,0,0},
+     {0,0,0,0,0,0,0,0},
+     {2,0,0,0,0,0,0,2},
+     {0,1,1,1,1,1,1,1}};
+
+
+
 
 void sq_unit(int,int);
 void white_area(int,int);
 void red_area(int,int);
+void laser();
+void Deflector(int,int,int);
+void Defender(int,int,int);
+void Switch(int,int,int);
+void King(int,int,int);
 
 void initGrid(int x, int y){
     gridX = x;
@@ -51,20 +60,20 @@ void drawPieces(){
 void white_area(int x, int y){
     glColor3f(1.0,1.0,1.0);
     glBegin(GL_QUADS);
-        glVertex2f(x+0.2,y+0.2);
-        glVertex2f(x+0.7,y+0.2);
+        glVertex2f(x+0.3,y+0.3);
+        glVertex2f(x+0.7,y+0.3);
         glVertex2f(x+0.7,y+0.7);
-        glVertex2f(x+0.2,y+0.7);
+        glVertex2f(x+0.3,y+0.7);
     glEnd();
 }
 
 void red_area(int x, int y){
     glColor3f(1.0,0.0,0.0);
     glBegin(GL_QUADS);
-        glVertex2f(x+0.2,y+0.2);
-        glVertex2f(x+0.7,y+0.2);
+        glVertex2f(x+0.3,y+0.3);
+        glVertex2f(x+0.7,y+0.3);
         glVertex2f(x+0.7,y+0.7);
-        glVertex2f(x+0.2,y+0.7);
+        glVertex2f(x+0.3,y+0.7);
     glEnd();
 }
 

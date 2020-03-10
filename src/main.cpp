@@ -1,14 +1,18 @@
 #include <GL/freeglut.h>
 #include <stdlib.h>
+#include <iostream>
 #include "game.h"
+#include "piece.h"
 
-//Run it with: gcc main.cpp game.cpp -o laserChess -lGL -lGLU -lglut
+//Run it with: gcc main.cpp game.cpp piece.cpp -o laserChess -lGL -lGLU -lglut -lstdc++
+//Simplification (Laser only shoot along north (for blue) and south (for red)
+//Simplification (You can only move the pieces, you can change their orientation)
 
 
 #define COLUMNS 10
-#define ROWS 10
+#define ROWS 8
 
-GLint Width = 650, Height = 650;
+GLint Width = 800, Height = 650;
 
 const int CubeSize = 200;
 
