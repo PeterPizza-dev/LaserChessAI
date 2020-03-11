@@ -1,5 +1,6 @@
 #include <GL/freeglut.h>
 #include <stdlib.h>
+#include <iostream>
 #include "game.h"
 #include "piece.h"
 
@@ -30,7 +31,7 @@ int play_board[10][8] =
 void sq_unit(int,int);
 void white_area(int,int);
 void red_area(int,int);
-void laser(int,int,int);
+void Laser(int,int,int);
 void Deflector(int,int,direction,int);
 void Defender(int,int,direction,int);
 void Switch(int,int,direction,int);
@@ -54,17 +55,36 @@ void drawBoard(){
     }
 }
 
-void drawPieces(){
-   laser(0,7,-5);
-   Defender(3,6,N,10);
-   Defender(4,2,S,-10);
-   Defender(7,1,E,10);
-   Defender(5,3,W,-10);
-   King(4,5,-10);
-   King(1,5,10);
+void drawPieces(int state[10][8]){
+    for (int i=0; i<gridX;i++){
+        for (int j=0;j<gridY;j++){
+            switch((int)(abs(state[i][j]) / 10)){
+                case 1:
+                    Laser(i,j,state[i][j]);
+                    break;
 
+                case 2:
+                    Deflector(i,j,direction(abs(state[i][j]) % 10),state[i][j]);
+                    break;
+                
+                case 3:
+                    Defender(i,j,direction(abs(state[i][j]) % 10),state[i][j]);
+                    break;
+                
+                case 4:
+                    Switch(i,j,direction(abs(state[i][j]) % 10),state[i][j]);
+                    break;
+                
+                case 5:
+                    King(i,j,state[i][j]);
+                    break;
+                
+                default:
+                    break;
 
-
+            }
+        }
+    }
 }
 
 void white_area(int x, int y){
@@ -111,7 +131,7 @@ void sq_unit(int x, int y){
      
 }
 
-void laser(int x, int y, int color){
+void Laser(int x, int y, int color){
     if (color < 0) {
         glColor3f(1.0,0.0,0.0);
     }else{
@@ -130,7 +150,7 @@ void laser(int x, int y, int color){
     
     glColor3f(1.0,1.0,1.0);
     glBegin(GL_TRIANGLES);
-        if (color == -5){
+        if (color < 0){
             glVertex2f(x+0.3,y+0.2);
             glVertex2f(x+0.7,y+0.2);
             glVertex2f(x+0.5,y+0.05);  
@@ -148,9 +168,9 @@ void Deflector(int x, int y, direction orientation, int color){
     }else{
         glColor3f(0.0,0.0,1.0);
     }
-    switch (direction(orientation))
+    switch (orientation)
     {
-    case N:
+    case W:
         glBegin(GL_TRIANGLES);
             glVertex2f(x+0.1,y+0.1);
             glVertex2f(x+0.9,y+0.1);
@@ -158,7 +178,7 @@ void Deflector(int x, int y, direction orientation, int color){
         glEnd();
         break;
     
-    case E:
+    case N:
         glBegin(GL_TRIANGLES);
             glVertex2f(x+0.1,y+0.1);
             glVertex2f(x+0.9,y+0.1);
@@ -166,7 +186,7 @@ void Deflector(int x, int y, direction orientation, int color){
         glEnd();
         break;
     
-    case S:
+    case E:
         glBegin(GL_TRIANGLES);
             glVertex2f(x+0.1,y+0.1);
             glVertex2f(x+0.9,y+0.9);
@@ -174,7 +194,7 @@ void Deflector(int x, int y, direction orientation, int color){
         glEnd();
         break;
 
-    case W:
+    case S:
         glBegin(GL_TRIANGLES);
             glVertex2f(x+0.9,y+0.1);
             glVertex2f(x+0.9,y+0.9);
@@ -199,7 +219,7 @@ void Defender(int x, int y, direction orientation, int color){
             glVertex2f(x+0.1,y+0.9);
     glEnd();
     glColor3f(0.0,1.0,0.0);
-    switch (direction(orientation))
+    switch (orientation)
     {
     case N:
         glBegin(GL_QUADS);
@@ -275,11 +295,44 @@ void Switch(int x, int y, direction orientation, int color){
     }else{
         glColor3f(0.0,0.0,1.0);
     }
+    switch (orientation)
+    {
+    case W:
+        glBegin(GL_POLYGON);
+            glVertex2f(x+0.1,y+0.2);
+            glVertex2f(x+0.2,y+0.1);
+            glVertex2f(x+0.9,y+0.8);
+            glVertex2f(x+0.8,y+0.9);
+        glEnd();
+        break;
     
-    glBegin(GL_QUADS);
-        glVertex2f(x+0.1,y+0.4);
-        glVertex2f(x+0.4,y+0.6);
-        glVertex2f(x+0.6,y+0.6);
-        glVertex2f(x+0.6,y+0.4);
-    glEnd();
+    case N:
+        glBegin(GL_POLYGON);
+            glVertex2f(x+0.9,y+0.2);
+            glVertex2f(x+0.8,y+0.1);
+            glVertex2f(x+0.1,y+0.8);
+            glVertex2f(x+0.2,y+0.9);
+        glEnd();
+        break;
+
+    case E:
+        glBegin(GL_POLYGON);
+            glVertex2f(x+0.1,y+0.2);
+            glVertex2f(x+0.2,y+0.1);
+            glVertex2f(x+0.9,y+0.8);
+            glVertex2f(x+0.8,y+0.9);
+        glEnd();
+        break;
+    
+    case S:
+        glBegin(GL_POLYGON);
+            glVertex2f(x+0.9,y+0.2);
+            glVertex2f(x+0.8,y+0.1);
+            glVertex2f(x+0.1,y+0.8);
+            glVertex2f(x+0.2,y+0.9);
+        glEnd();
+        break;
+
+    }
+    
 }
