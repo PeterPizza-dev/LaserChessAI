@@ -25,6 +25,22 @@ void Keyboard_event(unsigned char key, int x, int y);
 void Mouse_event(int button, int state, int x, int y);
 void init();
 
+
+//Template state
+
+int state[COLUMNS][ROWS] = 
+    {{0,0,0,-(20+E),-(20+N),0,0,-10},
+     {0,0,0,0,0,0,0,0},
+     {(20+W),0,0,(20+W),(20+S),0,-(20+S),0},
+     {(30+N),0,0,0,0,(20+W),0,0},
+     {50,0,0,(40+W),-(40+N),0,0,-(30+S)},
+     {(30+N),0,0,(40+S),-(40+E),0,0,-50},
+     {0,0,-(20+E),0,0,0,0,-(30+S)},
+     {0,(20+N),0,-(20+N),-(20+E),0,0,-(20+E)},
+     {0,0,0,0,0,0,0,0},
+     {10,0,0,(20+S),(20+W),0,0,0}};
+
+
 main(int argc, char *argv[])
 {
     glutInit(&argc, argv);
@@ -59,7 +75,7 @@ void reshape_callback(int w, int h){
 void Display_callback(){
     glClear(GL_COLOR_BUFFER_BIT);
     drawBoard();
-    drawPieces();
+    drawPieces(state);
     glutSwapBuffers();
 }
 
