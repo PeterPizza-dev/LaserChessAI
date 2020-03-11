@@ -1,6 +1,8 @@
 #ifndef GAME_H_INCLUDED
 #define GAME_H_INCLUDED
 
+
+
 void initGrid(int,int);
 //This is used to sepcifiy the number of grids (Here it is 10, which is static, but could be changed from main.cpp)
 

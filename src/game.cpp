@@ -1,7 +1,7 @@
 #include <GL/freeglut.h>
 #include <stdlib.h>
 #include "game.h"
-
+#include "piece.h"
 
 int gridX,gridY;
 
@@ -20,13 +20,20 @@ int play_board[10][8] =
 
 
 
+
+
+
+// All these classes are meant to draw the pieces to the gameboard
+// It is assumed that a 2D array (Matrix) is inputted to the drawPieces
+// such that the pieces with correct color, and orientation can be drawn.
+// the color is assumed to be -5 (red) 5 (blue).
 void sq_unit(int,int);
 void white_area(int,int);
 void red_area(int,int);
-void laser();
-void Deflector(int,int,int);
-void Defender(int,int,int);
-void Switch(int,int,int);
+void laser(int,int,int);
+void Deflector(int,int,direction,int);
+void Defender(int,int,direction,int);
+void Switch(int,int,direction,int);
 void King(int,int,int);
 
 void initGrid(int x, int y){
@@ -48,13 +55,16 @@ void drawBoard(){
 }
 
 void drawPieces(){
-    glColor3f(0.0,0.0,1.0);
-    glBegin(GL_QUADS);
-        glVertex2f(4,4);
-        glVertex2f(5,4);
-        glVertex2f(5,5);
-        glVertex2f(4,5);
-    glEnd();
+   laser(0,7,-5);
+   Defender(3,6,N,10);
+   Defender(4,2,S,-10);
+   Defender(7,1,E,10);
+   Defender(5,3,W,-10);
+   King(4,5,-10);
+   King(1,5,10);
+
+
+
 }
 
 void white_area(int x, int y){
@@ -68,7 +78,7 @@ void white_area(int x, int y){
 }
 
 void red_area(int x, int y){
-    glColor3f(1.0,0.0,0.0);
+    glColor3f(.8,0.0,0.0);
     glBegin(GL_QUADS);
         glVertex2f(x+0.3,y+0.3);
         glVertex2f(x+0.7,y+0.3);
@@ -99,4 +109,177 @@ void sq_unit(int x, int y){
         glEnd();
     }
      
+}
+
+void laser(int x, int y, int color){
+    if (color < 0) {
+        glColor3f(1.0,0.0,0.0);
+    }else{
+        glColor3f(0.0,0.0,1.0);
+    }
+    glBegin(GL_POLYGON);
+        glVertex2f(x+0.3,y+0.2);
+        glVertex2f(x+0.7,y+0.2);
+        glVertex2f(x+0.8,y+0.3);
+        glVertex2f(x+0.8,y+0.7);
+        glVertex2f(x+0.7,y+0.8);
+        glVertex2f(x+0.3,y+0.8);
+        glVertex2f(x+0.2,y+0.7);
+        glVertex2f(x+0.2,y+0.3);
+    glEnd();
+    
+    glColor3f(1.0,1.0,1.0);
+    glBegin(GL_TRIANGLES);
+        if (color == -5){
+            glVertex2f(x+0.3,y+0.2);
+            glVertex2f(x+0.7,y+0.2);
+            glVertex2f(x+0.5,y+0.05);  
+        }else{  
+            glVertex2f(x+0.3,y+0.8);
+            glVertex2f(x+0.7,y+0.8);
+            glVertex2f(x+0.5,y+0.95);  
+        }
+    glEnd();
+}
+
+void Deflector(int x, int y, direction orientation, int color){
+    if (color < 0) {
+        glColor3f(1.0,0.0,0.0);
+    }else{
+        glColor3f(0.0,0.0,1.0);
+    }
+    switch (direction(orientation))
+    {
+    case N:
+        glBegin(GL_TRIANGLES);
+            glVertex2f(x+0.1,y+0.1);
+            glVertex2f(x+0.9,y+0.1);
+            glVertex2f(x+0.9,y+0.9);
+        glEnd();
+        break;
+    
+    case E:
+        glBegin(GL_TRIANGLES);
+            glVertex2f(x+0.1,y+0.1);
+            glVertex2f(x+0.9,y+0.1);
+            glVertex2f(x+0.1,y+0.9);
+        glEnd();
+        break;
+    
+    case S:
+        glBegin(GL_TRIANGLES);
+            glVertex2f(x+0.1,y+0.1);
+            glVertex2f(x+0.9,y+0.9);
+            glVertex2f(x+0.1,y+0.9);
+        glEnd();
+        break;
+
+    case W:
+        glBegin(GL_TRIANGLES);
+            glVertex2f(x+0.9,y+0.1);
+            glVertex2f(x+0.9,y+0.9);
+            glVertex2f(x+0.1,y+0.9);
+        glEnd();
+        break;
+    }
+    
+    
+}    
+
+void Defender(int x, int y, direction orientation, int color){
+    if (color < 0) {
+        glColor3f(1.0,0.0,0.0);
+    }else{
+        glColor3f(0.0,0.0,1.0);
+    }
+    glBegin(GL_QUADS);
+            glVertex2f(x+0.1,y+0.1);
+            glVertex2f(x+0.9,y+0.1);
+            glVertex2f(x+0.9,y+0.9);
+            glVertex2f(x+0.1,y+0.9);
+    glEnd();
+    glColor3f(0.0,1.0,0.0);
+    switch (direction(orientation))
+    {
+    case N:
+        glBegin(GL_QUADS);
+            glVertex2f(x+0.05,y+0.9);
+            glVertex2f(x+0.95,y+0.9);
+            glVertex2f(x+0.95,y+0.8);
+            glVertex2f(x+0.05,y+0.8);
+        glEnd();
+        break;
+    
+    case E:
+        glBegin(GL_QUADS);
+            glVertex2f(x+0.9,y+0.05);
+            glVertex2f(x+0.9,y+0.95);
+            glVertex2f(x+0.8,y+0.95);
+            glVertex2f(x+0.8,y+0.05);
+        glEnd();
+        break;
+    
+    case S:
+        glBegin(GL_QUADS);
+            glVertex2f(x+0.05,y+0.1);
+            glVertex2f(x+0.95,y+0.1);
+            glVertex2f(x+0.95,y+0.2);
+            glVertex2f(x+0.05,y+0.2);
+        glEnd();
+        break;
+    
+    case W:
+        glBegin(GL_QUADS);
+            glVertex2f(x+0.1,y+0.05);
+            glVertex2f(x+0.1,y+0.95);
+            glVertex2f(x+0.2,y+0.95);
+            glVertex2f(x+0.2,y+0.05);
+        glEnd();
+        break;
+    }
+    
+    
+}
+
+void King(int x, int y, int color){
+    if (color < 0) {
+        glColor3f(1.0,0.0,0.0);
+    }else{
+        glColor3f(0.0,0.0,1.0);
+    }
+    glBegin(GL_QUADS);
+        glVertex2f(x+0.1,y+0.1);
+        glVertex2f(x+0.1,y+0.9);
+        glVertex2f(x+0.9,y+0.9);
+        glVertex2f(x+0.9,y+0.1);
+    glEnd();
+    glColor3f(1.0,1.0,1.0);
+    glBegin(GL_QUADS);
+        glVertex2f(x+0.3,y+0.3);
+        glVertex2f(x+0.3,y+0.7);
+        glVertex2f(x+0.7,y+0.7);
+        glVertex2f(x+0.7,y+0.3);
+    glEnd();
+    glColor3f(0,0,0);
+    glBegin(GL_QUADS);
+        glVertex2f(x+0.4,y+0.4);
+        glVertex2f(x+0.4,y+0.6);
+        glVertex2f(x+0.6,y+0.6);
+        glVertex2f(x+0.6,y+0.4);
+    glEnd();
+}
+
+void Switch(int x, int y, direction orientation, int color){
+    if (color < 0) {
+        glColor3f(1.0,0.0,0.0);
+    }else{
+        glColor3f(0.0,0.0,1.0);
+    }
+    
+    glBegin(GL_QUADS);
+        glVertex2f(x+0.1,y+0.4);
+        glVertex2f(x+0.4,y+0.6);
+        glVertex2f(x+0.6,y+0.6);
+        glVertex2f(x+0.6,y+0.4);
+    glEnd();
 }
