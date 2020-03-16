@@ -6,18 +6,27 @@
 
 int gridX,gridY;
 
-int play_board[10][8] = 
-    {{2,2,2,2,2,2,2,0},
-     {1,0,0,0,0,0,0,1},
-     {0,0,0,0,0,0,0,0},
-     {0,0,0,0,0,0,0,0},
-     {0,0,0,0,0,0,0,0},
-     {0,0,0,0,0,0,0,0},
-     {0,0,0,0,0,0,0,0},
-     {0,0,0,0,0,0,0,0},
-     {2,0,0,0,0,0,0,2},
-     {0,1,1,1,1,1,1,1}};
+// int play_board[10][8] = 
+//     {{2,2,2,2,2,2,2,0},
+//      {1,0,0,0,0,0,0,1},
+//      {0,0,0,0,0,0,0,0},
+//      {0,0,0,0,0,0,0,0},
+//      {0,0,0,0,0,0,0,0},
+//      {0,0,0,0,0,0,0,0},
+//      {0,0,0,0,0,0,0,0},
+//      {0,0,0,0,0,0,0,0},
+//      {2,0,0,0,0,0,0,2},
+//      {0,1,1,1,1,1,1,1}};
 
+int play_board[8][10] = 
+    {{0,1,0,0,0,0,0,0,2,1},
+     {2,0,0,0,0,0,0,0,0,1},
+     {2,0,0,0,0,0,0,0,0,1},
+     {2,0,0,0,0,0,0,0,0,1},
+     {2,0,0,0,0,0,0,0,0,1},
+     {2,0,0,0,0,0,0,0,0,1},
+     {2,0,0,0,0,0,0,0,0,1},
+     {2,1,0,0,0,0,0,0,2,0}};
 
 
 
@@ -46,37 +55,38 @@ void drawBoard(){
     for (int i=0; i<gridX;i++){
         for (int j=0;j<gridY;j++){
             sq_unit(i,j);
-            if (play_board[i][j] == 1){
-                white_area(i,j);
-            }else if (play_board[i][j] == 2){
-                red_area(i,j);
+            if (play_board[j][i] == 1){
+                white_area(i,(gridY-1)-j);
+            }else if (play_board[j][i] == 2){
+                red_area(i,(gridY-1)-j);
             }
         }
     }
 }
 
-void drawPieces(int state[10][8]){
+void drawPieces(int state[8][10]){
     for (int i=0; i<gridX;i++){
         for (int j=0;j<gridY;j++){
-            switch((int)(abs(state[i][j]) / 10)){
+            int piece = state[j][i];
+            switch((int)(abs(piece) / 10)){
                 case 1:
-                    Laser(i,j,state[i][j]);
+                    Laser(i,(gridY-1)-j,piece);
                     break;
 
                 case 2:
-                    Deflector(i,j,direction(abs(state[i][j]) % 10),state[i][j]);
+                    Deflector(i,(gridY-1)-j,direction(abs(piece) % 10),piece);
                     break;
                 
                 case 3:
-                    Defender(i,j,direction(abs(state[i][j]) % 10),state[i][j]);
+                    Defender(i,(gridY-1)-j,direction(abs(piece ) % 10),piece);
                     break;
                 
                 case 4:
-                    Switch(i,j,direction(abs(state[i][j]) % 10),state[i][j]);
+                    Switch(i,(gridY-1)-j,direction(abs(piece) % 10),piece);
                     break;
                 
                 case 5:
-                    King(i,j,state[i][j]);
+                    King(i,(gridY-1)-j,piece);
                     break;
                 
                 default:
