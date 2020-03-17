@@ -2,6 +2,7 @@
 #define PIECE_H_
 enum direction { NE, E, N, W, S, SE, SW, NW, None };
 
+
 class piece {
 protected:
 //	//Desciptive values of each piece in the class

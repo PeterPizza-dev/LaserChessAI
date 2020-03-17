@@ -1,17 +1,17 @@
-//#include <GL/freeglut.h>
+#include <GL/freeglut.h>
 #include <stdlib.h>
-//#include "game.h"
+#include "game.h"
 #include "Board.h"
 #include "piece.h"
 #include <iostream>
 using namespace std;
 //Run it with: gcc main.cpp game.cpp -o laserChess -lGL -lGLU -lglut
 
-/*
-#define COLUMNS 10
-#define ROWS 10
 
-GLint Width = 650, Height = 650;
+#define COLUMNS 10
+#define ROWS 8
+
+GLint Width = 800, Height = 650;
 
 const int CubeSize = 200;
 
@@ -24,7 +24,21 @@ void Keyboard_event(unsigned char key, int x, int y);
 void Mouse_event(int button, int state, int x, int y);
 void init();
 
-main(int argc, char *argv[])
+
+//Template state
+
+int state[ROWS][COLUMNS] = 
+    {{-10,0,0,0,-(30+S),-50,-(30+S),-(20+E),0,0},
+     {0,0,-(20+S),0,0,0,0,0,0,0},
+     {0,0,0,(20+W),0,0,0,0,0,0},
+     {-(20+N),0,(20+S),0,-(40+N),-(40+E),0,-(20+E),0,(20+W)},
+     {-(20+E),0,(20+W),0,(40+W),(40+S),0,-(20+N),0,(20+S)},
+     {0,0,0,0,0,0,-(20+E),0,0,0},
+     {0,0,0,0,0,0,0,(20+N),0},
+     {0,0,(20+W),(30+N),50,(30+N),0,0,0,10}};
+
+
+int main(int argc, char* argv[])
 {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB);
@@ -36,16 +50,10 @@ main(int argc, char *argv[])
     glutMouseFunc(Mouse_event);
     init();
     glutMainLoop();
-}
-*/
-int main() {
-	Board Playing;
-	Playing.init_ace();
-	std::cout << typeid(Playing.Active[5][0]).name() << "\n";
-	return 0;
+    return 0;
 }
 
-/*
+
 void init(){
     glClearColor(0.6f,0.6f,0.6f,1.0);
     initGrid(COLUMNS,ROWS);
@@ -65,7 +73,7 @@ void reshape_callback(int w, int h){
 void Display_callback(){
     glClear(GL_COLOR_BUFFER_BIT);
     drawBoard();
-    drawPieces();
+    drawPieces(state);
     glutSwapBuffers();
 }
 
@@ -78,4 +86,4 @@ void Keyboard_event(unsigned char key, int x, int y){
 void Mouse_event(int button, int state, int x, int y){
     
 }
-*/
+
