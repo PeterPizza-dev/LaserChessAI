@@ -35,7 +35,7 @@ void Board::update_board(Board Playing){
 			Playing.field[Playing.Active[i]->getX()][Playing.Active[i]->getY()] = Playing.Active[i]->getColour() * (Playing.Active[i]->getOrientation() * 10 + 0);//Insert Switch expression;
 		}
 
-		else { cout << "Unknow piece"; }
+		else { cout << "Unknown piece"; }
 	}
 	return;
 };
