@@ -87,3 +87,103 @@ void Board::init_ace(void) {
 	Active.push_back(new Switch(5, 4, E, -1));
 	return;
 }
+
+void Board::RTurn(Board Playing, int PosX, int PosY, direction move, direction turn) {
+	if (Playing.Blue_turn) { cout << "Blue turn to play";}
+	else if (move != None && turn != None) { cout << "Only one move is allowed per turn"; }
+	else{
+		int index = Playing.search(Playing, PosX, PosY);
+			if (move != None){
+				int res = Playing.move(Playing, index, move);
+			}
+			else {
+				int res = Playing.turn(Playing, index, turn);
+			}
+	}
+};
+
+void Board::BTurn(Board Playing, int PosX, int PosY, direction move, direction turn) {
+	if (!Playing.Blue_turn) { cout << "Red turn to play"; }
+	else if (move != None && turn != None) { cout << "Only one move is allowed per turn"; }
+	else {
+		int index = Playing.search(Playing, PosX, PosY);
+		if (move != None) {
+			int res = Playing.move(Playing, index, move);
+		}
+		else {
+			int res = Playing.turn(Playing, index, turn);
+		}
+	}
+};
+
+int Board::search(Board Playing, int PosX, int PosY) {
+	int index = -1;
+	for (unsigned int i; i > Playing.Active.size(); i++) {
+		if (Playing.Active[i]->getX() == PosX && Playing.Active[i]->getY() == PosY) { index = i; }
+	};
+	return index;
+};
+
+int Board::move(Board Playing, int index, direction move) {
+	switch (move)
+	{
+	case NE:
+		Playing.Active[index]->setX(Playing.Active[index]->getX() + 1);
+		Playing.Active[index]->setY(Playing.Active[index]->getY() - 1);
+		break;
+	case E:
+		Playing.Active[index]->setX(Playing.Active[index]->getX() + 1);
+		break;
+	case N:
+		Playing.Active[index]->setY(Playing.Active[index]->getY() - 1);
+		break;
+	case W:
+		Playing.Active[index]->setX(Playing.Active[index]->getX() - 1);
+		break;
+	case S:
+		Playing.Active[index]->setY(Playing.Active[index]->getY() + 1);
+		break;
+	case SE:
+		Playing.Active[index]->setX(Playing.Active[index]->getX() + 1);
+		Playing.Active[index]->setY(Playing.Active[index]->getY() + 1);
+		break;
+	case SW:
+		Playing.Active[index]->setX(Playing.Active[index]->getX() - 1);
+		Playing.Active[index]->setY(Playing.Active[index]->getY() + 1);
+		break;
+	case NW:
+		Playing.Active[index]->setX(Playing.Active[index]->getX() - 1);
+		Playing.Active[index]->setY(Playing.Active[index]->getY() - 1);
+		break;
+	default: 
+		cout << "Not an eligible move";
+		return -1;
+	}
+	return 0;
+};
+
+int Board::turn(Board Playing, int index, direction turn) {
+	switch (turn)
+	{
+	case E:
+		Playing.Active[index]->setOrientation(turn);
+		break;
+	case N:
+		Playing.Active[index]->setOrientation(turn);
+		break;
+	case W:
+		Playing.Active[index]->setOrientation(turn);
+		break;
+	case S:
+		Playing.Active[index]->setOrientation(turn);
+		break;
+	default:
+		cout << "Not an eligible move";
+			return -1;
+	}
+	return 0;
+};
+
+int* Board::getstate(void) {
+	return *field;
+};
