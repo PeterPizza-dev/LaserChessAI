@@ -1,10 +1,13 @@
-#include <GL/freeglut.h>
+//#include <GL/freeglut.h>
 #include <stdlib.h>
-#include "game.h"
-
+//#include "game.h"
+#include "Board.h"
+#include "piece.h"
+#include <iostream>
+using namespace std;
 //Run it with: gcc main.cpp game.cpp -o laserChess -lGL -lGLU -lglut
 
-
+/*
 #define COLUMNS 10
 #define ROWS 10
 
@@ -34,8 +37,15 @@ main(int argc, char *argv[])
     init();
     glutMainLoop();
 }
+*/
+int main() {
+	Board Playing;
+	Playing.init_ace();
+	std::cout << typeid(Playing.Active[1]).name();
+	return 0;
+}
 
-
+/*
 void init(){
     glClearColor(0.6f,0.6f,0.6f,1.0);
     initGrid(COLUMNS,ROWS);
@@ -68,3 +78,4 @@ void Keyboard_event(unsigned char key, int x, int y){
 void Mouse_event(int button, int state, int x, int y){
     
 }
+*/
