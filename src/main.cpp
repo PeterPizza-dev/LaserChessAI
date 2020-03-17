@@ -41,7 +41,7 @@ main(int argc, char *argv[])
 int main() {
 	Board Playing;
 	Playing.init_ace();
-	std::cout << typeid(Playing.Active[1]).name();
+	std::cout << typeid(Playing.Active[5][0]).name() << "\n";
 	return 0;
 }
 
