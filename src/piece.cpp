@@ -131,6 +131,7 @@ Laser::Laser(direction orientation, int colour){
 	this -> positionX = positionX;
 	this -> positionY = positionY;
 	this -> orientation = orientation;
+	this -> colour = colour;
 }
 int Laser::laser_in(int laser_direction){
 	return orientation;

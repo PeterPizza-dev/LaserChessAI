@@ -6,21 +6,26 @@
 
 class Board {
 protected:
-	int field[8][10];
+	int** field = 0;
+	int ROWS = 8;
+	int COLUMNS = 10;
 	std::vector <piece*> Active;
+
 
 public:
 	bool Blue_turn;
 	Board();
-	void update_board(Board Playing);
-	void display_board(Board Playing);
+	void update_board();
+	void display_board();
 	void init_ace(void);
-	void RTurn(Board Playing, int PosX, int PosY, direction move, direction turn);
-	void BTurn(Board Playing, int PosX, int PosY, direction move, direction turn);
-	int search(Board Playing, int PosX, int PosY);
-	int move(Board Playing, int index, direction move);
-	int turn(Board Playing, int index, direction turn);
-	int* getstate(void);
+	void RTurn( int PosX, int PosY, direction move_direc, direction turn_direc);
+	void BTurn( int PosX, int PosY, direction move_direc, direction turn_direc);
+	int search( int PosX, int PosY);
+	int move( int index_direc, direction move_direc);
+	int turn( int index_direc, direction turn_direc);
+	int** getstate(void);
+
+
 };
 
 

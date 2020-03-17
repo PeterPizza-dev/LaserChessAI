@@ -1,6 +1,6 @@
 #ifndef PIECE_H_
 #define PIECE_H_
-enum direction { NE, E, N, W, S, SE, SW, NW };
+enum direction { NE, E, N, W, S, SE, SW, NW, None };
 
 class piece {
 protected:
