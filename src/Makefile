@@ -23,7 +23,7 @@ else
 	endif
 endif
 
-COMPILE_SOURCES = game.cpp piece.cpp
+COMPILE_SOURCES = game.cpp piece.cpp Board.cpp
 
 TARGET = main.cpp
 

@@ -9,7 +9,7 @@ void initGrid(int,int);
 void drawBoard();
 //this is used to draw the static board
 
-void drawPieces(int[8][10]);
+void drawPieces(int**);
 //TODO:
 //This will be used draw all the live pieces in the game
 //Here we would need to pair the geometric figure with the class

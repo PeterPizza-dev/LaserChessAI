@@ -3,6 +3,7 @@
 #include <iostream>
 #include "game.h"
 #include "piece.h"
+#include "Board.h"
 
 int gridX,gridY;
 
@@ -48,7 +49,7 @@ void drawBoard(){
     }
 }
 
-void drawPieces(int state[8][10]){
+void drawPieces(int** state){ 
     for (int i=0; i<gridX;i++){
         for (int j=0;j<gridY;j++){
             int piece = state[j][i];
@@ -126,7 +127,7 @@ void sq_unit(int x, int y){
 }
 
 void Laser(int x, int y, int color){
-    if (color < 0) {
+    if (color > 0) {
         glColor3f(1.0,0.0,0.0);
     }else{
         glColor3f(0.0,0.0,1.0);
@@ -144,7 +145,7 @@ void Laser(int x, int y, int color){
     
     glColor3f(1.0,1.0,1.0);
     glBegin(GL_TRIANGLES);
-        if (color < 0){
+        if (color > 0){
             glVertex2f(x+0.3,y+0.2);
             glVertex2f(x+0.7,y+0.2);
             glVertex2f(x+0.5,y+0.05);  
@@ -157,7 +158,7 @@ void Laser(int x, int y, int color){
 }
 
 void Deflector(int x, int y, direction orientation, int color){
-    if (color < 0) {
+    if (color > 0) {
         glColor3f(1.0,0.0,0.0);
     }else{
         glColor3f(0.0,0.0,1.0);
@@ -203,7 +204,7 @@ void Deflector(int x, int y, direction orientation, int color){
 }    
 
 void Defender(int x, int y, direction orientation, int color){
-    if (color < 0) {
+    if (color > 0) {
         glColor3f(1.0,0.0,0.0);
     }else{
         glColor3f(0.0,0.0,1.0);
@@ -260,7 +261,7 @@ void Defender(int x, int y, direction orientation, int color){
 }
 
 void King(int x, int y, int color){
-    if (color < 0) {
+    if (color > 0) {
         glColor3f(1.0,0.0,0.0);
     }else{
         glColor3f(0.0,0.0,1.0);
@@ -288,7 +289,7 @@ void King(int x, int y, int color){
 }
 
 void Switch(int x, int y, direction orientation, int color){
-    if (color < 0) {
+    if (color > 0) {
         glColor3f(1.0,0.0,0.0);
     }else{
         glColor3f(0.0,0.0,1.0);

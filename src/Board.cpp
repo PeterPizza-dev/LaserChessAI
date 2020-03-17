@@ -24,7 +24,6 @@ void Board::update_board(){
 	}
 
 	for (unsigned int i = 0; i < Active.size(); i++) {
-		cout << Active[i]->getColour() << endl;
 		const char* pieceName =  typeid(Active[i][0]).name();
 		if (!strcmp(pieceName,"4King")){
 			field[Active[i]->getX()][Active[i]->getY()] = Active[i]->getColour()
@@ -32,7 +31,6 @@ void Board::update_board(){
 		}
 
 		else if (!strcmp(pieceName,"5Laser") ){
-			cout << Active[i]->getColour() << endl;
 			if (Active[i]->getColour() < 0) {
 				field[0][0] = 10;
 			}else {
@@ -74,7 +72,7 @@ void Board::init_ace(void) {
 	Active.push_back(new Deflector(1, 2, S, 1));
 	Active.push_back(new Deflector(3, 0, N, 1));
 	Active.push_back(new Deflector(3, 7, E, 1));
-	Active.push_back(new Deflector(4, 0, S, 1));
+	Active.push_back(new Deflector(4, 0, E, 1));
 	Active.push_back(new Deflector(4, 7, N, 1));
 	Active.push_back(new Deflector(5, 6, E, 1));
 
@@ -92,11 +90,11 @@ void Board::init_ace(void) {
 	Active.push_back(new Deflector(4, 2, W, -1));
 	Active.push_back(new Deflector(4, 9, S, -1));
 	Active.push_back(new Deflector(3, 2, S, -1));
-	Active.push_back(new Deflector(3, 9, N, -1));
-	Active.push_back(new Deflector(2, 3, N, -1));
+	Active.push_back(new Deflector(3, 9, W, -1));
+	Active.push_back(new Deflector(2, 3, W, -1));
 
-	Active.push_back(new Switch(4, 4, N, -1));
-	Active.push_back(new Switch(4, 5, E, -1));
+	Active.push_back(new Switch(4, 4, E, -1));
+	Active.push_back(new Switch(4, 5, N, -1));
 	return;
 }
 

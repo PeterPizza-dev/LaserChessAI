@@ -23,7 +23,7 @@ void reshape_callback(int,int);
 void Keyboard_event(unsigned char key, int x, int y);
 void Mouse_event(int button, int state, int x, int y);
 void init();
-
+Board Game;
 
 //Template state
 
@@ -55,6 +55,7 @@ int main(int argc, char* argv[])
 
 
 void init(){
+    Game.init_ace();
     glClearColor(0.6f,0.6f,0.6f,1.0);
     initGrid(COLUMNS,ROWS);
     
@@ -71,9 +72,10 @@ void reshape_callback(int w, int h){
 }
 
 void Display_callback(){
+    Game.update_board();
     glClear(GL_COLOR_BUFFER_BIT);
     drawBoard();
-    drawPieces(state);
+    drawPieces(Game.getstate());
     glutSwapBuffers();
 }
 
