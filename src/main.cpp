@@ -1,12 +1,11 @@
 #include <GL/freeglut.h>
 #include <stdlib.h>
-#include <iostream>
 #include "game.h"
+#include "Board.h"
 #include "piece.h"
-
-//Run it with: gcc main.cpp game.cpp piece.cpp -o laserChess -lGL -lGLU -lglut -lstdc++
-//Simplification (Laser only shoot along north (for blue) and south (for red)
-//Simplification (You can only move the pieces, you can change their orientation)
+#include <iostream>
+using namespace std;
+//Run it with: gcc main.cpp game.cpp -o laserChess -lGL -lGLU -lglut
 
 
 #define COLUMNS 10
@@ -87,3 +86,4 @@ void Keyboard_event(unsigned char key, int x, int y){
 void Mouse_event(int button, int state, int x, int y){
     
 }
+
