@@ -1,6 +1,8 @@
 #include "Board.h"
+#include "piece.h"
 #include <iostream>
 #include <string>
+
 using namespace std;
 
 Board::Board(){};
