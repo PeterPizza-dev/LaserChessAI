@@ -39,7 +39,7 @@ int state[ROWS][COLUMNS] =
      {0,0,(20+W),(30+N),50,(30+N),0,0,0,10}};
 
 
-main(int argc, char *argv[])
+main(int argc, char* argv[])
 {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB);

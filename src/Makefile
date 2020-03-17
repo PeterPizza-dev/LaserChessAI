@@ -1,4 +1,4 @@
-CC = gcc
+CC = g++
 
 # compiler flags
 CFLAGS = -lGL -lGLU -lglut -lstdc++
