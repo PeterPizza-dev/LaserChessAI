@@ -7,17 +7,20 @@
 class Board {
 protected:
 	int field[8][10];
-
-	//std::vector <piece*> Active;
+	std::vector <piece*> Active;
 
 public:
+	bool Blue_turn;
 	Board();
-	~Board();
 	void update_board(Board Playing);
 	void display_board(Board Playing);
 	void init_ace(void);
-
-	std::vector <piece*> Active;
+	void RTurn(Board Playing, int PosX, int PosY, direction move, direction turn);
+	void BTurn(Board Playing, int PosX, int PosY, direction move, direction turn);
+	int search(Board Playing, int PosX, int PosY);
+	int move(Board Playing, int index, direction move);
+	int turn(Board Playing, int index, direction turn);
+	int* getstate(void);
 };
 
 
