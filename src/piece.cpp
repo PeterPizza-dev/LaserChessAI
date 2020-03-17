@@ -7,19 +7,25 @@
 
 #include "piece.h"
 #include <math.h>
-using namespace std;
 #include <iostream>
+using namespace std;
+
 
 
 //Methods for all pieces
-
+piece::piece() {
+	this->positionX = 0;
+	this->positionY = 0;
+	this->orientation = N;
+	this->colour = 0;
+};
 int piece::getX(){
 	return positionX;
 }
 int piece::getY(){
 	return positionY;
 }
-int piece::getOrientation(){
+direction piece::getOrientation(){
 	return orientation;
 }
 int piece::getColour(){
@@ -31,13 +37,13 @@ void piece::setX(int x){
 void piece::setY(int y){
 	positionY = y;
 }
-void piece::setOrientation(int theta){
+void piece::setOrientation(direction theta){
 	orientation = theta;
 }
 
 //Methods for king class
 //Constructor
-King::King(int positionX, int positionY, int orientation, int colour){
+King::King(int positionX, int positionY, direction orientation, int colour){
 	this -> positionX = positionX;
 	this -> positionY = positionY;
 	this -> orientation = orientation;
@@ -50,7 +56,7 @@ int King::laser_in(int laser_direction){
 }
 
 //Deflector class
-Deflector::Deflector(int positionX, int positionY, int orientation, int colour){
+Deflector::Deflector(int positionX, int positionY, direction orientation, int colour){
 	this -> positionX = positionX;
 	this -> positionY = positionY;
 	this -> orientation = orientation;
@@ -82,7 +88,7 @@ int Deflector::laser_in(int laser_direction){
 }
 
 //Defender class
-Defender::Defender(int positionX, int positionY, int orientation, int colour){
+Defender::Defender(int positionX, int positionY, direction orientation, int colour){
 	this -> positionX = positionX;
 	this -> positionY = positionY;
 	this -> orientation = orientation;
@@ -98,7 +104,7 @@ int Defender::laser_in(int laser_direction){
 }
 
 //Switch calss
-Switch::Switch(int positionX, int positionY, int orientation, int colour){
+Switch::Switch(int positionX, int positionY, direction orientation, int colour){
 	this -> positionX = positionX;
 	this -> positionY = positionY;
 	this -> orientation = orientation;
@@ -121,7 +127,7 @@ int Switch::laser_in(int laser_direction){
 }
 
 //LASER CLASS
-Laser::Laser(int orientation, int colour){
+Laser::Laser(direction orientation, int colour){
 	this -> positionX = positionX;
 	this -> positionY = positionY;
 	this -> orientation = orientation;
