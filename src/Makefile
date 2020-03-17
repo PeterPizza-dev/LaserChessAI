@@ -1,7 +1,7 @@
 CC = g++
 
 # compiler flags
-CFLAGS = -lGL -lGLU -lglut -lstdc++
+CFLAGS = -lGL -lGLU -lglut -lstdc++ 
 
 COMPILE_SOURCES = game.cpp piece.cpp
 

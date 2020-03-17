@@ -17,10 +17,6 @@ int play_board[8][10] =
      {2,1,0,0,0,0,0,0,2,0}};
 
 
-
-
-
-
 // All these classes are meant to draw the pieces to the gameboard
 // It is assumed that a 2D array (Matrix) is inputted to the drawPieces
 // such that the pieces with correct color, and orientation can be drawn.
@@ -199,8 +195,10 @@ void Deflector(int x, int y, direction orientation, int color){
             glVertex2f(x+0.1,y+0.9);
         glEnd();
         break;
-    }
     
+    default:
+        break;
+    }
     
 }    
 
@@ -254,8 +252,10 @@ void Defender(int x, int y, direction orientation, int color){
             glVertex2f(x+0.2,y+0.05);
         glEnd();
         break;
-    }
     
+    default:
+        break;
+    }
     
 }
 
@@ -331,6 +331,10 @@ void Switch(int x, int y, direction orientation, int color){
         glEnd();
         break;
 
+    default:
+        break;
+    
     }
+
     
 }
