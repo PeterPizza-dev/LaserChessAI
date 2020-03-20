@@ -15,7 +15,6 @@ protected:
 public:
 	bool Blue_turn;
 	Board();
-	void display_board();
 	int gameDialog();
 	void init_ace(void);
 	int** getstate(void);
@@ -28,9 +27,9 @@ private:
 	void update_board();
 	int move( int index_piece, direction move_direc);
 	int turn( int index_piece, direction turn_direc);
-	bool validMove(int index_piece, int x, int y);
+	void validMove(int index_piece, int x, int y, bool *ret_safe_move, bool *ret_piece_there);
 
-
+	void switch_pieces(int index_piece, int x, int y);
 	int search( int PosX, int PosY);
 	void RTurn( int PosX, int PosY, direction move_direc, direction turn_direc);
 	void BTurn( int PosX, int PosY, direction move_direc, direction turn_direc);

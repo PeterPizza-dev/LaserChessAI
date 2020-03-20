@@ -3,11 +3,17 @@
 #include <iostream>
 #include "game.h"
 #include "piece.h"
-#include "Board.h"
 
 int gridX,gridY;
 
-int play_board[8][10] = 
+
+
+// All these classes are meant to draw the pieces to the gameboard
+// It is assumed that a 2D array (Matrix) is inputted to the drawPieces
+// such that the pieces with correct color, and orientation can be drawn.
+// the color is assumed to be -5 (red) 5 (blue).
+
+int play_board[8][10] =
     {{0,1,0,0,0,0,0,0,2,1},
      {2,0,0,0,0,0,0,0,0,1},
      {2,0,0,0,0,0,0,0,0,1},
@@ -18,10 +24,6 @@ int play_board[8][10] =
      {2,1,0,0,0,0,0,0,2,0}};
 
 
-// All these classes are meant to draw the pieces to the gameboard
-// It is assumed that a 2D array (Matrix) is inputted to the drawPieces
-// such that the pieces with correct color, and orientation can be drawn.
-// the color is assumed to be -5 (red) 5 (blue).
 void sq_unit(int,int);
 void white_area(int,int);
 void red_area(int,int);
