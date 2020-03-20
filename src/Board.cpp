@@ -2,9 +2,23 @@
 #include "piece.h"
 #include <iostream>
 #include <string.h>
-
+#include <regex>
 
 using namespace std;
+
+void clear();
+int charToInt(char c);
+
+//If altered, it should be changed in game.cpp as well
+int play_board_check[8][10] =
+    {{0,1,0,0,0,0,0,0,2,1},
+     {2,0,0,0,0,0,0,0,0,1},
+     {2,0,0,0,0,0,0,0,0,1},
+     {2,0,0,0,0,0,0,0,0,1},
+     {2,0,0,0,0,0,0,0,0,1},
+     {2,0,0,0,0,0,0,0,0,1},
+     {2,0,0,0,0,0,0,0,0,1},
+     {2,1,0,0,0,0,0,0,2,0}};
 
 
 Board::Board() {
@@ -56,10 +70,6 @@ void Board::update_board(){
 };
 
 
-void Board::display_board(){
-
-};
-
 void Board::init_ace(void) {
 	//Red pieces
 
@@ -95,6 +105,8 @@ void Board::init_ace(void) {
 
 	Active.push_back(new Switch(4, 4, E, -1));
 	Active.push_back(new Switch(4, 5, N, -1));
+
+	update_board();
 	return;
 }
 
@@ -112,12 +124,17 @@ void Board::RTurn( int PosX, int PosY, direction move_direc, direction turn_dire
 	}
 };
 
+
+
 void Board::BTurn( int PosX, int PosY, direction move_direc, direction turn_dire) {
-	if (!Blue_turn) { cout << "Red turn to play"; }
-	else if (move_direc != None && turn_dire != None) { cout << "Only one move is allowed per turn"; }
+	if (!Blue_turn) { cout << "Red turn to play"<<endl; }
+	else if (move_direc != None && turn_dire != None) { cout << "Only one move is allowed per turn"<<endl; }
 	else {
 		int index = search( PosX, PosY);
-		if (move_direc != None) {
+		if (Active[index]->getColour() > 0){
+			 cout << "This is a red piece, you can't move that" << endl;
+		}
+		else if (move_direc != None) {
 			int res = move( index, move_direc);
 		}
 		else {
@@ -127,44 +144,200 @@ void Board::BTurn( int PosX, int PosY, direction move_direc, direction turn_dire
 };
 
 int Board::search( int PosX, int PosY) {
-	int index = -1;
-	for (unsigned int i; i > Active.size(); i++) {
-		if (Active[i]->getX() == PosX && Active[i]->getY() == PosY) { index = i; }
+	int index = 0;
+	for (int i=0; i < Active.size(); i++) {
+		if (Active[i]->getX() == PosX && Active[i]->getY() == PosY) { 
+			return i; 
+		}
 	};
-	return index;
+	return -1;
 };
 
+void Board::validMove(int index_piece, int x, int y, bool *ret_safe_move, bool *ret_piece_there){
+	int res = search(x,y);
+	int colour = Active[index_piece] -> getColour();	
+	//Check out of bounds
+	if (x == ROWS || y == COLUMNS || x < 0 || y < 0){
+		cout << "You are moving a piece out of the board. This is not legal" << endl;
+		*ret_safe_move = false;
+		*ret_piece_there = false;
+	}
+	
+	else if (res < 0){
+		if ( (colour < 0 && play_board_check[x][y] != 2) || 
+			 (colour > 0 && play_board_check[x][y] != 1) ){
+			*ret_safe_move = true;
+			*ret_piece_there = false;
+		}else{
+			if (colour < 0) {
+				cout << "You are trying to move into a red only square" << endl;
+				*ret_safe_move = false;
+				*ret_piece_there = false;
+			}else {
+				cout << "You are trying to move into a blue only square" << endl;
+				*ret_safe_move = false;
+				*ret_piece_there = false;
+			}
+			*ret_safe_move = true;
+			*ret_piece_there = false;
+		}
+	}else{
+		cout << "A piece is already on this location" << endl;
+		*ret_safe_move = false;
+		*ret_piece_there = true;
+	}
+
+}
+
+
+void Board::switch_pieces(int index, int x, int y){
+	int switch_index = search(x,y);
+
+	Active[switch_index] -> setX(Active[index]->getX());
+	Active[switch_index] -> setY(Active[index]->getY());
+	Active[index]        -> setX(x);
+	Active[index]        -> setY(y);
+}
+
 int Board::move( int index, direction move_dire) {
+	int x,y;
+	bool res_safe,res_taken;
+	const char* pieceName =  typeid(Active[index][0]).name();
 	switch (move_dire)
 	{
 	case NE:
-		Active[index]->setX(Active[index]->getX() + 1);
-		Active[index]->setY(Active[index]->getY() - 1);
-		break;
+		x = Active[index]->getX() - 1;
+		y = Active[index]->getY() + 1;
+		validMove(index,x,y,&res_safe,&res_taken);
+		if(res_safe){
+			Active[index]->setX(x);
+			Active[index]->setY(y);
+			break;
+		}else{
+			if (res_taken){
+				if (!strcmp(pieceName,"6Switch")){
+					switch_pieces(index,x,y);
+					break;
+				}else{ return -1; break;}
+			}
+		}
+	
 	case E:
-		Active[index]->setX(Active[index]->getX() + 1);
-		break;
+		x = Active[index]->getX();
+		y = Active[index]->getY() + 1;
+		validMove(index,x,y,&res_safe,&res_taken);
+		if(res_safe){
+			Active[index]->setY(y);
+			break;
+		}else{
+			if (res_taken){
+				if (!strcmp(pieceName,"6Switch")){
+					switch_pieces(index,x,y);
+					break;
+				}else{ return -1; break;}
+			}
+		}
+	
+	
 	case N:
-		Active[index]->setY(Active[index]->getY() - 1);
-		break;
+		x = Active[index]->getX() - 1;
+		y = Active[index]->getY();
+		validMove(index,x,y,&res_safe,&res_taken);
+		if(res_safe){
+			Active[index]->setX(x);
+			break;
+		}else{
+			if (res_taken){
+				if (!strcmp(pieceName,"6Switch")){
+					switch_pieces(index,x,y);
+					break;
+				}else{ return -1; break;}
+			}
+		}
+
 	case W:
-		Active[index]->setX(Active[index]->getX() - 1);
-		break;
+		x = Active[index]->getX();
+		y = Active[index]->getY() -1;
+		validMove(index,x,y,&res_safe,&res_taken);
+		if(res_safe){
+			Active[index]->setY(y);
+			break;
+		}else{
+			if (res_taken){
+				if (!strcmp(pieceName,"6Switch")){
+					switch_pieces(index,x,y);
+					break;
+				}else{ return -1; break;}
+			}
+		}
+
 	case S:
-		Active[index]->setY(Active[index]->getY() + 1);
-		break;
+		x = Active[index]->getX() + 1;
+		y = Active[index]->getY();
+		validMove(index,x,y,&res_safe,&res_taken);
+		if(res_safe){
+			Active[index]->setX(x);
+			break;
+		}else{
+			if (res_taken){
+				if (!strcmp(pieceName,"6Switch")){
+					switch_pieces(index,x,y);
+					break;
+				}else{ return -1; break;}
+			}
+		}
+
 	case SE:
-		Active[index]->setX(Active[index]->getX() + 1);
-		Active[index]->setY(Active[index]->getY() + 1);
-		break;
+		x = Active[index]->getX() + 1;
+		y = Active[index]->getY() + 1;
+		validMove(index,x,y,&res_safe,&res_taken);
+		if(res_safe){
+			Active[index]->setX(x);
+			Active[index]->setY(y);
+			break;
+		}else{
+			if (res_taken){
+				if (!strcmp(pieceName,"6Switch")){
+					switch_pieces(index,x,y);
+					break;
+				}else{ return -1; break;}
+			}
+		}
+	
 	case SW:
-		Active[index]->setX(Active[index]->getX() - 1);
-		Active[index]->setY(Active[index]->getY() + 1);
-		break;
+		x = Active[index]->getX() + 1;
+		y = Active[index]->getY() - 1;
+		validMove(index,x,y,&res_safe,&res_taken);
+		if(res_safe){
+			Active[index]->setX(x);
+			Active[index]->setY(y);
+			break;
+		}else{
+			if (res_taken){
+				if (!strcmp(pieceName,"6Switch")){
+					switch_pieces(index,x,y);
+					break;
+				}else{ return -1; break;}
+			}
+		}
+		
 	case NW:
-		Active[index]->setX(Active[index]->getX() - 1);
-		Active[index]->setY(Active[index]->getY() - 1);
-		break;
+		x = Active[index]->getX() - 1;
+		y = Active[index]->getY() - 1;
+		validMove(index,x,y,&res_safe,&res_taken);
+		if(res_safe){
+			Active[index]->setX(x);
+			Active[index]->setY(y);
+			break;
+		}else{
+			if (res_taken){
+				if (!strcmp(pieceName,"6Switch")){
+					switch_pieces(index,x,y);
+					break;
+				}else{ return -1; break;}
+			}
+		}
+
 	default: 
 		cout << "Not an eligible move";
 		return -1;
@@ -175,25 +348,277 @@ int Board::move( int index, direction move_dire) {
 int Board::turn( int index, direction turn_dire) {
 	switch (turn_dire)
 	{
-	case E:
-		Active[index]->setOrientation(turn_dire);
+	case NE:
+		cout << "Not an eligible turn";
 		break;
-	case N:
-		Active[index]->setOrientation(turn_dire);
+	case NW:
+		cout << "Not an eligible turn";
 		break;
-	case W:
-		Active[index]->setOrientation(turn_dire);
+	case SW:
+		cout << "Not an eligible turn";
 		break;
-	case S:
-		Active[index]->setOrientation(turn_dire);
+	case SE:
+		cout << "Not an eligible turn";
 		break;
 	default:
-		cout << "Not an eligible move";
-			return -1;
+		Active[index]->setOrientation(turn_dire);
+		return 0;
 	}
-	return 0;
+	return -1;
 };
 
 int** Board::getstate(void) {
 	return field;
 };
+
+
+void Board::playerChoiceDialog(){		
+	if(Blue_turn){cout << "Player One (Blue turn)" <<endl;}
+	else{cout<< "Player Two (Red turn)" << endl;}
+	cout << "First choose what piece to move:" << endl;
+	bool col_choice,row_choice,chosing_piece,chose_the_move = true;
+	int x,y,piece_index;
+	char col,row;
+	regex regex_pattern_col("[a-j]");
+	regex regex_pattern_row("[1-8]");
+
+	while (chosing_piece){
+		while (col_choice){
+
+			cout << "Choose in what coloumn [a-j] (reading left to right) the piece is placed" <<endl;
+			string input;
+			getline(cin, input);
+			input = tolower(input[0]);
+		
+			if(!regex_match(input,regex_pattern_col)){
+				clear();
+				cout << "That is not a legal choice, please try again:" << endl;
+			}else{ col=input[0]; y = charToInt(input[0]); col_choice=false; }
+
+		}
+
+		while (row_choice){
+			row_choice = false;
+			cout << "Choose in what row [1-8] (reading bottom to top) the piece is placed" <<endl;
+			string input;
+			getline(cin, input);
+			if(!regex_match(input,regex_pattern_row)){
+				clear();
+				cout << "That is not a legal choice, please try again:" << endl;
+			}else{ row=input[0];x = 8-(input[0] - '0'); row_choice = false;	}
+			
+		}
+		
+		piece_index = search(x, y);
+		if(piece_index < 0) {
+			clear();
+			cout << "There is no piece in this position, please try again" << endl;
+			col_choice = row_choice = true;
+		}else{
+			if ( (Active[piece_index] -> getColour() < 0 && Blue_turn) || (Active[piece_index] -> getColour() > 0 && !Blue_turn) ){ chosing_piece = false;}
+			else{
+				col_choice = row_choice = true;
+				if(Blue_turn){
+					clear(); 
+					cout << "You can't choose the piece on " << col << row << " Since this is a red piece, and it is blues turn."<< endl;}
+				else{
+					clear(); 
+					cout << "You can't choose the piece on " << col << row << " Since this is a blue piece, and it is reds turn."<< endl;}
+				}
+			}	
+		}
+	cout << "Second choice what you would like to do" << endl;
+	while(chose_the_move){
+		cout << "[0] Move piece: UP" << endl;
+		cout << "[1] Move piece: UPPER RIGHT CORNOR" << endl;
+		cout << "[2] Move piece: RIGHT" << endl;
+		cout << "[3] Move piece: LOWER RIGHT CORNOR" << endl;
+		cout << "[4] Move piece: DOWN" << endl;
+		cout << "[5] Move piece: LOWER LEFT CORNOR" << endl;
+		cout << "[6] Move piece: LEFT" << endl;
+		cout << "[7] Move piece: UPPER LEFT CORNOR" << endl;
+		cout << "[8] Turn piece: CLOCKWISE" << endl;
+		cout << "[9] Turn piece: COUNTER CLOCKWISE" << endl;
+
+		string input;
+		getline(cin, input);
+		regex regex_pattern("[0-9]");
+		int choice;
+		if(!regex_match(input,regex_pattern)){
+			choice = -1;
+		}else{
+			choice = input[0] - '0';
+		}
+		switch(choice){
+			case 0:
+				if(move(piece_index,N) != 0){break;}
+				else{chose_the_move = false; break;}
+			
+			case 1:
+				if(move(piece_index,NE) != 0){break;}
+				else{chose_the_move = false; break;}
+			
+			case 2:
+				if(move(piece_index,E) != 0){break;}
+				else{chose_the_move = false; break;}
+			
+			case 3:
+				if(move(piece_index,SE) != 0){break;}
+				else{chose_the_move = false; break;}
+			
+			
+			case 4:
+				if(move(piece_index,S) != 0){break;}
+				else{chose_the_move = false; break;}
+			
+			case 5:
+				if(move(piece_index,SW) != 0){break;}
+				else{chose_the_move = false; break;}
+			
+			case 6:
+				if(move(piece_index,W) != 0){break;}
+				else{chose_the_move = false; break;}
+			
+			case 7:
+				if(move(piece_index,NW) != 0){break;}
+				else{chose_the_move = false; break;}
+			
+			
+			case 8:
+				cout << "We got into case 8" << endl;
+				chose_the_move = false;
+				switch(Active[piece_index]->getOrientation()){
+					case N:
+						turn(piece_index,E);
+						break;
+					case E:
+						turn(piece_index,S);
+						break;
+					case S:
+						turn(piece_index,W);
+						break;
+					case W:
+						turn(piece_index,N);
+						break;
+					default:
+						cout << "Sorry can't turn to that" << endl;
+						break;
+				}
+				break;
+			
+			case 9:
+				chose_the_move = false;
+				switch(Active[piece_index]->getOrientation()){
+					case N:
+						turn(piece_index,W);
+						break;
+					case W:
+						turn(piece_index,S);
+						break;
+					case S:
+						turn(piece_index,E);
+						break;
+					case E:
+						turn(piece_index,N);
+						break;
+					
+					default:
+						break;
+				}
+				break;
+
+			default:
+				cout << "No case match, continue." << endl;
+				break;
+		}
+
+	}
+	
+}
+
+
+
+int Board::gameDialog(){
+	cout << "Welcome to Laser chess, choose what gamemode you will like:" << endl;
+	cout << "[1] Player vs. Player" << endl;
+	cout << "[2] Player vs. Computer" << endl;
+	cout << "[3] Computer vs. Computer" << endl;
+	int choice;
+	bool choosing = true;
+	while(choosing){
+		string input;
+		getline(cin, input);
+		regex regex_pattern("[0-9]");
+		if(!regex_match(input,regex_pattern)){
+			choice = -1;
+		}else{
+			choice = input[0] - '0';
+		}
+		switch(choice){
+			case 1:
+				//start player vs player 
+				clear();
+				return 1;
+				choosing = false;
+				break;
+
+			case 2:
+				//start player vs Computer
+				clear();
+				return 2;
+				choosing = false;
+				break;
+
+			case 3:
+				//start player vs Computer
+				clear();
+				return 3;
+				choosing = false;
+				break;
+
+			default:
+				clear();
+				cout << "Not a possible option, please choose one of the following." << endl;
+				cout << "Player vs. Player [1]" << endl;
+				cout << "Player vs. Computer [2]" << endl;
+				cout << "Computer vs. Computer [3]" << endl;
+				break;
+		}
+	}
+};
+
+bool Board::ComputerVsComputer(){
+	cout << "Lean back, and watch the computer win against itself" << endl;
+	return false;
+
+}
+
+bool Board::PlayerVsPlayer(){
+	playerChoiceDialog();
+	if(Blue_turn){Blue_turn=false;}
+	else{Blue_turn=true;}
+	update_board();
+	clear();
+	return false;
+
+	
+}
+
+bool Board::PlayerVsComputer(){
+	return false;
+
+}
+
+
+void clear(){
+	cout << "\n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n" << endl;
+}
+
+
+int charToInt(char c){
+	array<char,10> chars= {'a','b','c','d','e','f','g','h','i','j'};
+	for (int i=0; i<chars.size(); i++){
+		if(c == chars[i]){ return i;}
+	}
+}
+
