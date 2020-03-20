@@ -23,6 +23,9 @@ void reshape_callback(int,int);
 void Keyboard_event(unsigned char key, int x, int y);
 void Mouse_event(int button, int state, int x, int y);
 void init();
+
+bool gameDone;
+int gameMode;
 Board Game;
 
 //Template state
@@ -46,8 +49,8 @@ int main(int argc, char* argv[])
     glutCreateWindow("Laser Chess");
     glutReshapeFunc(reshape_callback);
     glutDisplayFunc(Display_callback);
+    glutIdleFunc(Display_callback);
     glutKeyboardFunc(Keyboard_event);
-    glutMouseFunc(Mouse_event);
     init();
     glutMainLoop();
     return 0;
@@ -55,9 +58,12 @@ int main(int argc, char* argv[])
 
 
 void init(){
+    gameMode = Game.gameDialog();
+    //From the seeting what init do we need
     Game.init_ace();
     glClearColor(0.6f,0.6f,0.6f,1.0);
     initGrid(COLUMNS,ROWS);
+    
     
 }
 
@@ -72,11 +78,23 @@ void reshape_callback(int w, int h){
 }
 
 void Display_callback(){
-    Game.update_board();
     glClear(GL_COLOR_BUFFER_BIT);
     drawBoard();
     drawPieces(Game.getstate());
     glutSwapBuffers();
+    switch(gameMode){
+        case 1:
+            gameDone = Game.PlayerVsPlayer();
+            break;
+        case 2:
+            Game.PlayerVsComputer();
+            break;
+        case 3:
+            Game.ComputerVsComputer();
+            break;
+        default:
+            break;
+    }
 }
 
 void Keyboard_event(unsigned char key, int x, int y){
@@ -85,7 +103,4 @@ void Keyboard_event(unsigned char key, int x, int y){
     }
 }
 
-void Mouse_event(int button, int state, int x, int y){
-    
-}
 
