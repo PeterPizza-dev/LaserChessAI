@@ -14,6 +14,6 @@ void drawPieces(int**);
 //This will be used draw all the live pieces in the game
 //Here we would need to pair the geometric figure with the class
 //And the player that this piece belongs to.
-
+void drawLaserTrack(int**,bool);
 
 #endif // GAME_H_INCLUDED

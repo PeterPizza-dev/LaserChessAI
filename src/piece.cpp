@@ -50,8 +50,8 @@ King::King(int positionX, int positionY, direction orientation, int colour){
 	this -> colour = colour;
 }
 
-int King::laser_in(int laser_direction){
-	return -100;
+direction King::laser_in(direction laser_direction){
+	return Dead;
 	//Og lav eventuel destructor
 }
 
@@ -62,28 +62,44 @@ Deflector::Deflector(int positionX, int positionY, direction orientation, int co
 	this -> orientation = orientation;
 	this -> colour = colour;
 }
-int Deflector::laser_in(int laser_direction){
+direction Deflector::laser_in(direction laser_direction){
 	    switch(laser_direction){
-	    case 1:
-	    	if(orientation == 1 || orientation == 2)
-	    		return orientation % 2 == 0 ? 2:4;
-	    	else return -100;
-	        break;
-	    case 2:
-	    	if(orientation == 2 || orientation == 3)
-	    		return orientation % 2 == 0 ? 1:3;
-	    	else return -100;
-	        break;
-	    case 3:
-	    	if(orientation == 3 || orientation == 4)
-	    		return orientation % 2 == 0 ? 4:2;
-	    	else return -100;
-	        break;
-	    case 4:
-	    	if(orientation == 4 || orientation == 1)
-	        	return orientation % 2 == 0 ? 3:1;
-	    	else return -100;
-	    	break;
+	    case N:
+	    	switch(orientation){
+				case S:
+					return W;
+				case E:
+					return E;
+				default:
+					return Dead;
+			}
+	    case S:
+	    	switch(orientation){
+				case N:
+					return E;
+				case W:
+					return W;
+				default:
+					return Dead;
+			}
+	    case E:
+	    	switch(orientation){
+				case S:
+					return S;
+				case W:
+					return N;
+				default:
+					return Dead;
+			}
+	    case W:
+	    	switch(orientation){
+				case E:
+					return S;
+				case N:
+					return N;
+				default:
+					return Dead;
+			}
 	}
 }
 
@@ -94,12 +110,42 @@ Defender::Defender(int positionX, int positionY, direction orientation, int colo
 	this -> orientation = orientation;
 	this -> colour = colour;
 }
-int Defender::laser_in(int laser_direction){
-	if (laser_direction==orientation){
-		return 100;
-	}
-	else{
-		return -100;
+direction Defender::laser_in(direction laser_direction){
+	switch(laser_direction){
+		case N:
+			switch(orientation){
+				case S:
+					return None;
+				default:
+					return Dead;
+			}
+		
+		case E:
+			switch(orientation){
+				case W:
+					return None;
+				default:
+					return Dead;
+			}
+
+		case S:
+			switch(orientation){
+				case N:
+					return None;
+				default:
+					return Dead;
+			}
+
+		case W:
+			switch(orientation){
+				case E:
+					return None;
+				default:
+					return Dead;
+			}
+
+		default:
+			return None;
 	}
 }
 
@@ -110,20 +156,64 @@ Switch::Switch(int positionX, int positionY, direction orientation, int colour){
 	this -> orientation = orientation;
 	this -> colour = colour;
 }
-int Switch::laser_in(int laser_direction){
+direction Switch::laser_in(direction laser_direction){
     switch(laser_direction){
-    case 1:
-        return orientation % 2 == 0 ? 2:4;
-        break;
-    case 2:
-        return orientation % 2 == 0 ? 1:3;
-        break;
-    case 3:
-        return orientation % 2 == 0 ? 4:2;
-        break;
-    case 4:
-        return orientation % 2 == 0 ? 3:1;
-}
+		case N:
+			switch(orientation){
+				case N:
+					return W;
+				case S:
+					return W;
+				case E:
+					return E;
+				case W:
+					return E;
+				default:
+					return None;
+			}
+		case E:
+			switch(orientation){
+				case N:
+					return S;
+				case S:
+					return S;
+				case E:
+					return N;
+				case W:
+					return N;
+				default:
+					return None;
+			}
+		
+		case S:
+			switch(orientation){
+				case N:
+					return E;
+				case S:
+					return E;
+				case E:
+					return W;
+				case W:
+					return W;
+				default:
+					return None;
+			}
+		case W:
+			switch(orientation){
+				case N:
+					return N;
+				case S:
+					return N;
+				case E:
+					return S;
+				case W:
+					return S;
+				default:
+					return None;
+			}
+		default:
+			return None;
+	}
 }
 
 //LASER CLASS
@@ -133,9 +223,44 @@ Laser::Laser(direction orientation, int colour){
 	this -> orientation = orientation;
 	this -> colour = colour;
 }
-int Laser::laser_in(int laser_direction){
+direction Laser::laser_in(direction laser_direction){
 	return orientation;
 }
 
+//The laser beam
+Laser_Track::Laser_Track(int positionX, int positionY, direction orientation){
+	this -> positionX = positionX;
+	this -> positionY = positionY;
+	this -> orientation = orientation;
+	this -> colour = colour;
+}
+
+void Laser_Track::update_pos(){
+	switch(this -> orientation){
+		case N:
+			this -> positionX--;
+			break;
+		case E:
+			this -> positionY++;
+			break;
+		case S:
+			this -> positionX++;
+			break;
+		case W:
+			this -> positionY--;
+			break;
+	}
+}
+
+direction Laser_Track::laser_in(direction laser_direction){
+	return orientation;
+}
+
+Laser_Track::Laser_Track() {
+	this->positionX = 0;
+	this->positionY = 0;
+	this->orientation = N;
+	this->colour = 0;
+};
 
 
