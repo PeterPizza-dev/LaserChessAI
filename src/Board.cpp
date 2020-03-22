@@ -25,8 +25,74 @@ Board::Board() {
 	Blue_turn = true;
 };
 
-//all pieces blue are negative. red pieces are positive
+//
+void Board::update_laser(){
+	//Reset board for updating
+	laser_track = new int*[ROWS];
+	for (int i = 0; i < ROWS; i++) {
+		laser_track[i] = new int[COLUMNS];
+		for (int j = 0; j < COLUMNS; j++) {
+			laser_track[i][j] = 0;
+		}
+	}
+	Laser_Track Laser;
+	if(Blue_turn){
+		Laser.setX(7);
+		Laser.setY(9);
+		Laser.setOrientation(N);
+	}else{
+		Laser.setX(0);
+		Laser.setY(0);
+		Laser.setOrientation(S);
+	}
+	
+	int x,y;
+	int hit;
+	direction new_ori;
+	for (int i = 0; i < (ROWS*COLUMNS); i++ ){
 
+		Laser.update_pos();
+		x = Laser.getX();
+		y = Laser.getY();
+		cout << "(" << x <<"," <<y<<")" << endl;
+		if (x < 0 || x == ROWS || y < 0 || y == COLUMNS){
+			break;
+		}
+		laser_track[x][y] = 1;
+		hit = search(x,y);
+		if (hit != -1){
+			new_ori = Active[hit] -> laser_in(Laser.getOrientation());	
+			cout << new_ori << endl;	
+			if(new_ori == None){
+				break;
+			}
+			else if (new_ori == Dead){
+
+				if (!strcmp(typeid(Active[hit][0]).name(),"4King")){
+					if(Active[hit] -> getColour() < 0){Blue_win = false;}
+					else {Blue_win = true;}
+					Game_done = true;
+					break;
+				}
+				Active.erase(Active.begin()+hit);
+				
+				break;
+			}else{
+				Laser.setOrientation(new_ori);
+			}
+		}
+	}
+
+	for (int i = 0; i < ROWS; i++) {
+		for (int j = 0; j < COLUMNS; j++) {
+			cout << laser_track[i][j] << " ";
+		}
+		cout << "\n" << endl;
+	}
+}
+
+
+//all pieces blue are negative. red pieces are positive
 void Board::update_board(){
 	//Reset board for updating
 	field = new int*[ROWS];
@@ -371,7 +437,12 @@ int** Board::getstate(void) {
 	return field;
 };
 
-
+int** Board::getLaserTrack(void) {
+	return laser_track;
+};
+void Board::Delete_active_vector(void){
+	Active.clear();
+}
 void Board::playerChoiceDialog(){		
 	if(Blue_turn){cout << "Player One (Blue turn)" <<endl;}
 	else{cout<< "Player Two (Red turn)" << endl;}
@@ -544,8 +615,8 @@ int Board::gameDialog(){
 	cout << "[2] Player vs. Computer" << endl;
 	cout << "[3] Computer vs. Computer" << endl;
 	int choice;
-	bool choosing = true;
-	while(choosing){
+	Game_done = false;
+	while(true){
 		string input;
 		getline(cin, input);
 		regex regex_pattern("[0-9]");
@@ -559,22 +630,16 @@ int Board::gameDialog(){
 				//start player vs player 
 				clear();
 				return 1;
-				choosing = false;
-				break;
 
 			case 2:
 				//start player vs Computer
 				clear();
 				return 2;
-				choosing = false;
-				break;
 
 			case 3:
 				//start player vs Computer
 				clear();
 				return 3;
-				choosing = false;
-				break;
 
 			default:
 				clear();
@@ -584,7 +649,7 @@ int Board::gameDialog(){
 				cout << "Computer vs. Computer [3]" << endl;
 				break;
 		}
-	}
+	} 
 };
 
 bool Board::ComputerVsComputer(){
@@ -595,11 +660,13 @@ bool Board::ComputerVsComputer(){
 
 bool Board::PlayerVsPlayer(){
 	playerChoiceDialog();
+	update_board();
+	update_laser();
+	update_board();
 	if(Blue_turn){Blue_turn=false;}
 	else{Blue_turn=true;}
-	update_board();
 	clear();
-	return false;
+	return Game_done;
 
 	
 }

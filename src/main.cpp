@@ -4,6 +4,10 @@
 #include "Board.h"
 #include "piece.h"
 #include <iostream>
+#include <unistd.h>
+#include <regex>
+
+
 using namespace std;
 //Run it with: gcc main.cpp game.cpp -o laserChess -lGL -lGLU -lglut
 
@@ -23,8 +27,9 @@ void reshape_callback(int,int);
 void Keyboard_event(unsigned char key, int x, int y);
 void Mouse_event(int button, int state, int x, int y);
 void init();
+void call_draw_functions();
 
-bool gameDone;
+bool gameDone = false;
 int gameMode;
 Board Game;
 
@@ -49,7 +54,6 @@ int main(int argc, char* argv[])
     glutCreateWindow("Laser Chess");
     glutReshapeFunc(reshape_callback);
     glutDisplayFunc(Display_callback);
-    glutIdleFunc(Display_callback);
     glutKeyboardFunc(Keyboard_event);
     init();
     glutMainLoop();
@@ -61,6 +65,9 @@ void init(){
     gameMode = Game.gameDialog();
     //From the seeting what init do we need
     Game.init_ace();
+    Game.update_board();
+    gameDone = false;
+    glutIdleFunc(Display_callback);
     glClearColor(0.6f,0.6f,0.6f,1.0);
     initGrid(COLUMNS,ROWS);
     
@@ -76,24 +83,54 @@ void reshape_callback(int w, int h){
     glMatrixMode(GL_MODELVIEW);
 
 }
-
-void Display_callback(){
+void call_draw_functions(){
     glClear(GL_COLOR_BUFFER_BIT);
     drawBoard();
     drawPieces(Game.getstate());
+    //drawLaserTrack(Game.getLaserTrack(),Game.Blue_turn);
     glutSwapBuffers();
-    switch(gameMode){
-        case 1:
-            gameDone = Game.PlayerVsPlayer();
-            break;
-        case 2:
-            Game.PlayerVsComputer();
-            break;
-        case 3:
-            Game.ComputerVsComputer();
-            break;
-        default:
-            break;
+}
+
+void Display_callback(){
+    if(!gameDone){
+        call_draw_functions();
+        switch(gameMode){
+            case 1:
+                gameDone = Game.PlayerVsPlayer();
+                if(gameDone){
+                    call_draw_functions();
+                }
+                break;
+            case 2:
+                Game.PlayerVsComputer();
+                break;
+            case 3:
+                Game.ComputerVsComputer();
+                break;
+            default:
+                break;
+        }
+    }else{
+        glutIdleFunc(NULL);
+        Game.Delete_active_vector();
+        Game.Blue_turn = true;
+        if(Game.Blue_win){cout << "Blue wins the game, congratz, wanna try again? [y/n]" << endl;}
+        else{cout << "Red wins the game, congratz, wanna try again? [y/n]" << endl;}
+        string input;
+        getline(cin, input);
+        input = tolower(input[0]);
+        regex regex_pattern("[y,n]");
+        if(!regex_match(input,regex_pattern)){
+            Display_callback();
+        }else{
+            char in = input[0];
+            if(in == 'n'){
+                exit(0);
+            }else{init();}
+            
+        }
+        
+
     }
 }
 
