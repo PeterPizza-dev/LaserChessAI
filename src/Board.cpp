@@ -487,6 +487,12 @@ void Board::playerChoiceDialog(){
 			col_choice = row_choice = true;
 		}else{
 			if ( (Active[piece_index] -> getColour() < 0 && Blue_turn) || (Active[piece_index] -> getColour() > 0 && !Blue_turn) ){ chosing_piece = false;}
+			else if(!strcmp(typeid(Active[piece_index][0]).name(),"5Laser")){
+				clear();
+				cout << "This is the laser, you can't move this, choice another piece." << endl;
+				col_choice = row_choice = true;
+			}
+			
 			else{
 				col_choice = row_choice = true;
 				if(Blue_turn){
