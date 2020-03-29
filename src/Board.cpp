@@ -83,7 +83,7 @@ void Board::update_laser(){
 		}
 	}
 	updateRedAndBlueActive();
-
+	calculate_score();
 	for (int i = 0; i < ROWS; i++) {
 		for (int j = 0; j < COLUMNS; j++) {
 			cout << laser_track[i][j] << " ";
