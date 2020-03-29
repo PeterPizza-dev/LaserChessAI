@@ -82,6 +82,7 @@ void Board::update_laser(){
 			}
 		}
 	}
+	updateRedAndBlueActive();
 
 	for (int i = 0; i < ROWS; i++) {
 		for (int j = 0; j < COLUMNS; j++) {
@@ -798,7 +799,6 @@ bool Board::PlayerVsPlayer(){
 	playerChoiceDialog();
 	update_board();
 	update_laser();
-	updateRedAndBlueActive();
 	update_board();
 	calculate_score();
 	cout << score << endl; 
