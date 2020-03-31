@@ -5,16 +5,15 @@
 
 struct Move
 {
-    int piece, move;
+    int pieceX, pieceY, move;
 };
 
 
-class Ai {
-protected:
-	bool turn;
-	Move;
+class AI {
 public:
-	Ai();
+	AI(bool status);
+	bool isActive;
+	int utility(Board board);
 	int miniMax(Board board, int depth, bool MaxPlayer);
 	Move findMove(Board board);
 };
