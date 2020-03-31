@@ -41,9 +41,9 @@ public:
 
 private:
 	void playerChoiceDialog();
-	int move( int index_piece, direction move_direc);
+	int move( int index_piece, direction move_direc, bool print);
 	int turn( int index_piece, direction turn_direc);
-	void validMove(int index_piece, int x, int y, bool *ret_safe_move, bool *ret_piece_there);
+	void validMove(int index_piece, int x, int y, bool *ret_safe_move, bool *ret_piece_there, bool print);
 	void updateRedAndBlueActive();
 	void calculate_score();
 	void switch_pieces(int index_piece, int x, int y);
