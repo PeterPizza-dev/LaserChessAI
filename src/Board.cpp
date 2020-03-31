@@ -24,6 +24,7 @@ int play_board_check[8][10] =
      {2,1,0,0,0,0,0,0,2,0}};
 
 
+
 Board::Board() {
 	Blue_turn = true;
 };
@@ -278,12 +279,14 @@ int Board::search( int PosX, int PosY) {
 	return -1;
 };
 
-void Board::validMove(int index_piece, int x, int y, bool *ret_safe_move, bool *ret_piece_there){
+void Board::validMove(int index_piece, int x, int y, bool *ret_safe_move, bool *ret_piece_there, bool print){
 	int res = search(x,y);
 	int colour = Active[index_piece] -> getColour();	
 	//Check out of bounds
 	if (x == ROWS || y == COLUMNS || x < 0 || y < 0){
-		cout << "You are moving a piece out of the board. This is not legal" << endl;
+		if (print){
+			cout << "You are moving a piece out of the board. This is not legal" << endl;
+		}
 		*ret_safe_move = false;
 		*ret_piece_there = false;
 	}
@@ -306,8 +309,9 @@ void Board::validMove(int index_piece, int x, int y, bool *ret_safe_move, bool *
 		}
 
 	}else{
-
-		cout << "A piece is already on this location" << endl;
+		if(print){
+			cout << "A piece is already on this location" << endl;
+		}
 		if (colour < 0 && play_board_check[x][y] == 1){
 			*ret_safe_move = false;
 			*ret_piece_there = true;
@@ -319,9 +323,11 @@ void Board::validMove(int index_piece, int x, int y, bool *ret_safe_move, bool *
 			*ret_safe_move = false;
 			*ret_piece_there = true;
 		}else{
+			if(print){
 			cout << "Even if you move a switch, you can't move into a coloured space, which isn't yours." << endl;
 			*ret_safe_move = false;
 			*ret_piece_there = false;
+			}
 		}
 		
 	}
@@ -338,7 +344,7 @@ void Board::switch_pieces(int index, int x, int y){
 	Active[index]        -> setY(y);
 }
 
-int Board::move( int index, direction move_dire) {
+int Board::move( int index, direction move_dire, bool print) {
 	int x,y;
 	bool res_safe,res_taken;
 	std::vector <piece*> player_vec;
@@ -350,7 +356,7 @@ int Board::move( int index, direction move_dire) {
 		case NE:
 			x = Active[index]->getX() - 1;
 			y = Active[index]->getY() + 1;
-			validMove(index,x,y,&res_safe,&res_taken);
+			validMove(index,x,y,&res_safe,&res_taken,print);
 			if(res_safe){
 				Active[index]->setX(x);
 				Active[index]->setY(y);
@@ -370,7 +376,7 @@ int Board::move( int index, direction move_dire) {
 		case E:
 			x = Active[index]->getX();
 			y = Active[index]->getY() + 1;
-			validMove(index,x,y,&res_safe,&res_taken);
+			validMove(index,x,y,&res_safe,&res_taken,print);
 			if(res_safe){
 				Active[index]->setY(y);
 				return 0;
@@ -389,7 +395,7 @@ int Board::move( int index, direction move_dire) {
 		case N:
 			x = Active[index]->getX() - 1;
 			y = Active[index]->getY();
-			validMove(index,x,y,&res_safe,&res_taken); 
+			validMove(index,x,y,&res_safe,&res_taken,print); 
 			if(res_safe){
 				Active[index]->setX(x);
 				return 0;
@@ -408,7 +414,7 @@ int Board::move( int index, direction move_dire) {
 		case W:
 			x = Active[index]->getX();
 			y = Active[index]->getY() -1;
-			validMove(index,x,y,&res_safe,&res_taken);
+			validMove(index,x,y,&res_safe,&res_taken,print);
 			if(res_safe){
 				Active[index]->setY(y);
 				return 0;
@@ -426,7 +432,7 @@ int Board::move( int index, direction move_dire) {
 		case S:
 			x = Active[index]->getX() + 1;
 			y = Active[index]->getY();
-			validMove(index,x,y,&res_safe,&res_taken);
+			validMove(index,x,y,&res_safe,&res_taken,print);
 			if(res_safe){
 				Active[index]->setX(x);
 				return 0;
@@ -444,7 +450,7 @@ int Board::move( int index, direction move_dire) {
 		case SE:
 			x = Active[index]->getX() + 1;
 			y = Active[index]->getY() + 1;
-			validMove(index,x,y,&res_safe,&res_taken);
+			validMove(index,x,y,&res_safe,&res_taken,print);
 			if(res_safe){
 				Active[index]->setX(x);
 				Active[index]->setY(y);
@@ -463,7 +469,7 @@ int Board::move( int index, direction move_dire) {
 		case SW:
 			x = Active[index]->getX() + 1;
 			y = Active[index]->getY() - 1;
-			validMove(index,x,y,&res_safe,&res_taken);
+			validMove(index,x,y,&res_safe,&res_taken,print);
 			if(res_safe){
 				Active[index]->setX(x);
 				Active[index]->setY(y);
@@ -482,7 +488,7 @@ int Board::move( int index, direction move_dire) {
 		case NW:
 			x = Active[index]->getX() - 1;
 			y = Active[index]->getY() - 1;
-			validMove(index,x,y,&res_safe,&res_taken);
+			validMove(index,x,y,&res_safe,&res_taken,print);
 			if(res_safe){
 				Active[index]->setX(x);
 				Active[index]->setY(y);
@@ -621,36 +627,36 @@ void Board::playerChoiceDialog(){
 		}
 		switch(choice){
 			case 0:
-				if(move(piece_index,N) != 0){break;}
+				if(move(piece_index,N,true) != 0){break;}
 				else{chose_the_move = false; break;}
 			
 			case 1:
-				if(move(piece_index,NE) != 0){break;}
+				if(move(piece_index,NE,true) != 0){break;}
 				else{chose_the_move = false; break;}
 			
 			case 2:
-				if(move(piece_index,E) != 0){break;}
+				if(move(piece_index,E,true) != 0){break;}
 				else{chose_the_move = false; break;}
 			
 			case 3:
-				if(move(piece_index,SE) != 0){break;}
+				if(move(piece_index,SE,true) != 0){break;}
 				else{chose_the_move = false; break;}
 			
 			
 			case 4:
-				if(move(piece_index,S) != 0){break;}
+				if(move(piece_index,S,true) != 0){break;}
 				else{chose_the_move = false; break;}
 			
 			case 5:
-				if(move(piece_index,SW) != 0){break;}
+				if(move(piece_index,SW,true) != 0){break;}
 				else{chose_the_move = false; break;}
 			
 			case 6:
-				if(move(piece_index,W) != 0){break;}
+				if(move(piece_index,W,true) != 0){break;}
 				else{chose_the_move = false; break;}
 			
 			case 7:
-				if(move(piece_index,NW) != 0){break;}
+				if(move(piece_index,NW,true) != 0){break;}
 				else{chose_the_move = false; break;}
 			
 			
@@ -702,7 +708,6 @@ void Board::playerChoiceDialog(){
 		}
 
 	}
-	
 }
 int Board::Do_action(int index, int choice){
 	int piece_index;
@@ -716,28 +721,28 @@ int Board::Do_action(int index, int choice){
 
 	switch(choice){
 		case 0:
-			return move(piece_index,N);
+			return move(piece_index,N,false);
 		
 		case 1:
-			return move(piece_index,NE);
+			return move(piece_index,NE,false);
 		
 		case 2:
-			return move(piece_index,E);
+			return move(piece_index,E,false);
 		
 		case 3:
-			return move(piece_index,SE);
+			return move(piece_index,SE,false);
 		
 		
 		case 4:
-			return move(piece_index,S);
+			return move(piece_index,S,false);
 		
 		case 5:
-			return move(piece_index,SW);
+			return move(piece_index,SW,false);
 		
 		case 6:
-			return move(piece_index,W);
+			return move(piece_index,W,false);
 		case 7:
-			return move(piece_index,NW);		
+			return move(piece_index,NW,false);		
 		
 		case 8:
 			switch(Active[piece_index]->getOrientation()){
@@ -852,13 +857,15 @@ bool Board::PlayerVsPlayer(){
 
 bool Board::PlayerVsComputer(){
 	//Debug of Do_action
-	Blue_turn = false;
-	//Try and move deflector all the different ways
-	cout << Do_action(11,debug_counter) << endl;
 	update_board();
-	debug_counter++;
-	debug_counter %= 10;
-	return false;
+	clear();
+	playerChoiceDialog();
+	update_laser();
+	update_board();
+	Blue_turn = true;
+	
+	//Try and move deflector all the different ways
+	return Game_done;
 
 }
 
