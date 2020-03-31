@@ -6,6 +6,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <regex>
+#include "AI.h"
 
 
 using namespace std;
@@ -32,7 +33,7 @@ void call_draw_functions();
 bool gameDone = false;
 int gameMode;
 Board Game;
-
+AI computer(true);
 //Template state
 
 int state[ROWS][COLUMNS] = 
@@ -48,6 +49,7 @@ int state[ROWS][COLUMNS] =
 
 int main(int argc, char* argv[])
 {
+	cout<<"LETS GO"<<endl;
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB);
     glutInitWindowSize(Width, Height);
@@ -70,8 +72,8 @@ void init(){
     glutIdleFunc(Display_callback);
     glClearColor(0.6f,0.6f,0.6f,1.0);
     initGrid(COLUMNS,ROWS);
-    
-    
+	cout<<"THIS IS "<<computer.utility(Game)<<endl;
+	computer.findMove(Game);
 }
 
 

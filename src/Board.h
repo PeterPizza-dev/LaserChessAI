@@ -24,6 +24,8 @@ public:
 	std::vector <piece*> RedActive;
 
 	Board();
+	~Board();
+	Board(const Board& old_board);
 	int gameDialog();
 	void init_ace(void);
 	int** getstate(void);

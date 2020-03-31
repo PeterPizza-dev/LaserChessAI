@@ -4,6 +4,7 @@
 #include <string.h>
 #include <regex>
 #include <array>
+#include "AI.h"
 
 
 using namespace std;
@@ -26,8 +27,20 @@ int play_board_check[8][10] =
 Board::Board() {
 	Blue_turn = true;
 };
+Board::~Board() {
+	Blue_turn = true;
+};
 
-//
+Board::Board(const Board &old_board) {
+
+	for (int i = 0; i < sizeof(old_board.Active); i++)
+	{
+		Active[i]=old_board.Active[i];
+	}
+}
+
+
+
 void Board::update_laser(){
 	//Reset board for updating
 	laser_track = new int*[ROWS];
@@ -814,7 +827,6 @@ bool Board::PlayerVsComputer(){
 	//Debug of Do_action
 	Blue_turn = false;
 	//Try and move deflector all the different ways
-	
 	cout << Do_action(11,debug_counter) << endl;
 	update_board();
 	debug_counter++;
@@ -825,7 +837,7 @@ bool Board::PlayerVsComputer(){
 
 
 void clear(){
-	cout << "\n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n" << endl;
+	cout << "\n\n" << endl;
 }
 
 
