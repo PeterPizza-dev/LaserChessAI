@@ -32,11 +32,38 @@ Board::~Board() {
 };
 
 Board::Board(const Board &old_board) {
-
+	score = old_board.score;
 	for (int i = 0; i < sizeof(old_board.Active); i++)
-	{
-		Active[i]=old_board.Active[i];
-	}
+		{
+			const char* pieceName =  typeid(old_board.Active[i][0]).name();
+			int x = old_board.Active[i] -> getX();
+			int y  = old_board.Active[i] -> getY();
+			direction ori = old_board.Active[i] -> getOrientation();
+			int colour =  old_board.Active[i] -> getColour();
+
+			if (!strcmp(pieceName, "4King")){
+				Active.push_back(new King(x,y,ori,colour));
+			}
+
+			else if (!strcmp(pieceName, "8Defender")){
+				Active.push_back(new Defender(x,y,ori,colour));
+			}
+
+			else if (!strcmp(pieceName, "9Deflector")){
+				Active.push_back(new Deflector(x,y,ori,colour));
+			}
+
+			else if (!strcmp(pieceName, "5Laser")){
+				Active.push_back(new Laser(ori,colour));
+			}
+			else if (!strcmp(pieceName, "6Switch")){
+				Active.push_back(new Switch(x,y,ori,colour));
+
+			}
+
+		}
+		updateRedAndBlueActive();
+
 }
 
 
@@ -97,12 +124,12 @@ void Board::update_laser(){
 	}
 	updateRedAndBlueActive();
 	calculate_score();
-	for (int i = 0; i < ROWS; i++) {
-		for (int j = 0; j < COLUMNS; j++) {
-			cout << laser_track[i][j] << " ";
-		}
-		cout << "\n" << endl;
-	}
+//	for (int i = 0; i < ROWS; i++) {
+//		for (int j = 0; j < COLUMNS; j++) {
+//			cout << laser_track[i][j] << " ";
+//		}
+//		cout << "\n" << endl;
+//	}
 }
 
 void Board:: calculate_score(){

@@ -36,11 +36,11 @@ public:
 	void update_board();
 	void Delete_active_vector();
 	int Do_action(int,int);
+	void update_laser();
 
 
 private:
 	void playerChoiceDialog();
-	void update_laser();
 	int move( int index_piece, direction move_direc);
 	int turn( int index_piece, direction turn_direc);
 	void validMove(int index_piece, int x, int y, bool *ret_safe_move, bool *ret_piece_there);

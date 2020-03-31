@@ -17,8 +17,8 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 	//Current value of board
 	int score = board.score;
 
-	if (depth == 2){
-		return utility(board);
+	if (depth == 1){
+		return score;
 	}
 
 	//If the node is a leaf node return the vale
@@ -26,20 +26,22 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 	if(score > 900 || score < -900){
 		return score;
 	}
-
+	cout<<MaxPlayer<<endl;
 	if(MaxPlayer){
 		int bestValue = -1000;
 		//For every move possible - for each piece
 		//Piece
-		for(int i=0; i<board.BlueActive.size(); i++){
+		for(int i=0; i<8; i++){
 			//For each piece, total number of moves
 			for(int j=0; j<10; j++){
 				Board Temp_board = board;
 				//NODE REPRESENTS THE NODE/NEXT GAME state
 				Temp_board.Do_action(i, j);
 				Temp_board.update_board();
+				Temp_board.update_laser();
+				Temp_board.update_board();
 				//UNDO the move - piece back to ORG position.
-				bestValue = max(bestValue, miniMax(board, depth+1, false));
+				bestValue = max(bestValue, miniMax(Temp_board, depth+1, false));
 			}
 		}
 		return bestValue;
@@ -48,13 +50,15 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 		int bestValue = 1000;
 		//For every move possible - for each piece
 		//Piece
-		for(int i=0; i<board.RedActive.size(); i++){
+		for(int i=0; i<8; i++){
 			//For each piece, total number of moves
 			for(int j=0; j<10; j++){
 				Board Temp_board = board;
 				Temp_board.Do_action(i, j);
 				Temp_board.update_board();
-				bestValue = min(bestValue, miniMax(board, depth+1, true));
+				Temp_board.update_laser();
+				Temp_board.update_board();
+				bestValue = min(bestValue, miniMax(Temp_board, depth+1, true));
 			}
 		}
 		return bestValue;
@@ -65,26 +69,28 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 //Essentially just the first MAX step in miniMax
 //Made seperately to extract the move, which max the evaluation function
 Move AI::findMove(Board board){
-	cout<<"funtion call success"<<endl;
 	int bestValue = -1000;
 	Move bestMove;
 	bestMove.pieceX = -1;
 	bestMove.pieceY = -1;
 	bestMove.move = -1;
-	cout<<"size:"<<board.BlueActive.size()<<endl;
 	for(int i=0; i<board.BlueActive.size(); i++){
 		//Here the org. position could be saved.
 		for(int j=0; j<10; j++){
-
 			Board Temp_board = board;
 			// Make the move
 			Temp_board.Do_action(i, j);
-			Temp_board.update_board();
 			//UNDO the move - piece back to ORG position.
+			Temp_board.update_board();
+			Temp_board.update_laser();
+			Temp_board.update_board();
+
+
 			int value = max(bestValue, miniMax(Temp_board, 0, false));
-			cout<<"Best val:"<<bestValue<<endl;
+			cout<<"Best val:"<<value<<endl;
 			//UNDO the move - piece back to ORG position.
 			//Evt. en destructor her på tidligere board
+			cout<<"Main"<<endl;
 
 			if(value > bestValue){
 				bestMove.pieceX = board.BlueActive[i]->getX();
@@ -92,7 +98,8 @@ Move AI::findMove(Board board){
 				bestMove.move = j;
 				bestValue = value;
 			}
-			board.update_board();
+			cout<<"Return best val"<<bestValue<<endl;
+
 		}
 	}
 	//~Temp_board();

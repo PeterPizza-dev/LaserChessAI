@@ -58,6 +58,8 @@ int main(int argc, char* argv[])
     glutDisplayFunc(Display_callback);
     glutKeyboardFunc(Keyboard_event);
     init();
+	cout<<"THIS IS "<<computer.utility(Game)<<endl;
+	computer.findMove(Game);
     glutMainLoop();
     return 0;
 }
@@ -72,8 +74,6 @@ void init(){
     glutIdleFunc(Display_callback);
     glClearColor(0.6f,0.6f,0.6f,1.0);
     initGrid(COLUMNS,ROWS);
-	cout<<"THIS IS "<<computer.utility(Game)<<endl;
-	computer.findMove(Game);
 }
 
 
@@ -131,8 +131,6 @@ void Display_callback(){
             }else{init();}
             
         }
-        
-
     }
 }
 
