@@ -5,7 +5,7 @@
 
 struct Move
 {
-    int pieceX, pieceY, move;
+    int piece, move;
 };
 
 

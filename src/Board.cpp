@@ -34,6 +34,8 @@ Board::~Board() {
 
 Board::Board(const Board &old_board) {
 	score = old_board.score;
+	Blue_turn = true;
+
 	for (int i = 0; i < sizeof(old_board.Active); i++)
 		{
 			const char* pieceName =  typeid(old_board.Active[i][0]).name();

@@ -17,7 +17,7 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 	//Current value of board
 	int score = board.score;
 
-	if (depth == 1){
+	if (depth == 2){
 		return score;
 	}
 
@@ -26,15 +26,16 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 	if(score > 900 || score < -900){
 		return score;
 	}
-	cout<<MaxPlayer<<endl;
 	if(MaxPlayer){
 		int bestValue = -1000;
 		//For every move possible - for each piece
 		//Piece
-		for(int i=0; i<10; i++){
+		for(int i=0; i<board.BlueActive.size(); i++){
 			//For each piece, total number of moves
 			for(int j=0; j<10; j++){
 				Board Temp_board = board;
+				Temp_board.Blue_turn=true;
+
 				//NODE REPRESENTS THE NODE/NEXT GAME state
 				Temp_board.Do_action(i, j);
 				Temp_board.update_board();
@@ -50,10 +51,12 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 		int bestValue = 1000;
 		//For every move possible - for each piece
 		//Piece
-		for(int i=0; i<10; i++){
+		for(int i=0; i<board.RedActive.size(); i++){
 			//For each piece, total number of moves
 			for(int j=0; j<10; j++){
 				Board Temp_board = board;
+				Temp_board.Blue_turn=false;
+
 				Temp_board.Do_action(i, j);
 				Temp_board.update_board();
 				Temp_board.update_laser();
@@ -71,21 +74,20 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 Move AI::findMove(Board board){
 	int bestValue = -1000;
 	Move bestMove;
-	bestMove.pieceX = -1;
-	bestMove.pieceY = -1;
+	bestMove.piece = -1;
 	bestMove.move = -1;
 	for(int i=0; i<board.BlueActive.size(); i++){
 		//Here the org. position could be saved.
 		for(int j=0; j<10; j++){
+
 			Board Temp_board = board;
+			Temp_board.Blue_turn=true;
 			// Make the move
 			Temp_board.Do_action(i, j);
 			//UNDO the move - piece back to ORG position.
 			Temp_board.update_board();
 			Temp_board.update_laser();
 			Temp_board.update_board();
-
-
 			int value = max(bestValue, miniMax(Temp_board, 0, false));
 			cout<<"Best val:"<<value<<endl;
 			//UNDO the move - piece back to ORG position.
@@ -93,10 +95,8 @@ Move AI::findMove(Board board){
 			cout<<"Main"<<endl;
 
 			if(value > bestValue){
-//				bestMove.pieceX = board.BlueActive[i]->getX();
-//				bestMove.pieceY = board.BlueActive[i]->getY();
-				bestMove.pieceX = i;
 
+				bestMove.piece = i;
 				bestMove.move = j;
 				bestValue = value;
 			}
@@ -105,16 +105,12 @@ Move AI::findMove(Board board){
 		}
 	}
 	//~Temp_board();
-	board.Do_action(bestMove.pieceX, bestMove.move);
 	cout<<"SIZE is blue"<<board.BlueActive.size()<<endl;
 	cout<<"SIZE is red"<<board.RedActive.size()<<endl;
 
 	//UNDO the move - piece back to ORG position.
-	board.update_board();
-	board.update_laser();
-	board.update_board();
 	cout<<"Return best val"<<bestValue<<endl;
-	cout <<"Move piece "<<bestMove.pieceX<<" Ypos: "<<" with move "<<bestMove.move<<endl;
+	cout <<"Move piece "<<bestMove.piece<<" Ypos: "<<" with move "<<bestMove.move<<endl;
 	return bestMove;
 }
 

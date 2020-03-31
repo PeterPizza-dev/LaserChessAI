@@ -58,8 +58,9 @@ int main(int argc, char* argv[])
     glutDisplayFunc(Display_callback);
     glutKeyboardFunc(Keyboard_event);
     init();
-	cout<<"THIS IS "<<computer.utility(Game)<<endl;
-	computer.findMove(Game);
+	Move AI = computer.findMove(Game);
+	Game.Do_action(AI.piece, AI.move);
+
     glutMainLoop();
     return 0;
 }
