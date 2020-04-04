@@ -96,7 +96,6 @@ Move AI::findMove(Board board){
 	bestMove.move = -1;
 	for(int i=0; i<board.BlueActive.size(); i++){
 		//Here the org. position could be saved.
-		cout << "piecename: " << typeid(board.BlueActive[i][0]).name() << endl;
 		for(int j=0; j<10; j++){
 			//dont try and turn the king
 			if (!strcmp(typeid(board.BlueActive[i][0]).name(),"4King") && j == 8){
