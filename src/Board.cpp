@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string.h>
 #include <regex>
+#include <bits/stdc++.h>  
 #include <array>
 #include "AI.h"
 
@@ -29,14 +30,28 @@ Board::Board() {
 	Blue_turn = true;
 };
 Board::~Board() {
-	Blue_turn = true;
+	//Remove all the entries in the vectors
+	Active.clear();
+	BlueActive.clear();
+	RedActive.clear();
+	//Free up the allocated memory, by swaping them with empty nonallocated vectors
+	vector<piece*>().swap(Active);
+	vector<piece*>().swap(BlueActive);
+	vector<piece*>().swap(RedActive);
+
+	//delete the element in feild, and free memory
+	field = NULL;
+
+	//delete the element in feild, and free memory
+    laser_track = NULL;
+
+	
 };
 
 Board::Board(const Board &old_board) {
 	score = old_board.score;
-	Blue_turn = true;
-
-	for (int i = 0; i < sizeof(old_board.Active); i++)
+	Blue_turn = old_board.Blue_turn;
+	for (int i = 0; i < old_board.Active.size(); i++)
 		{
 			const char* pieceName =  typeid(old_board.Active[i][0]).name();
 			int x = old_board.Active[i] -> getX();
@@ -61,7 +76,6 @@ Board::Board(const Board &old_board) {
 			}
 			else if (!strcmp(pieceName, "6Switch")){
 				Active.push_back(new Switch(x,y,ori,colour));
-
 			}
 
 		}
@@ -71,7 +85,8 @@ Board::Board(const Board &old_board) {
 
 
 
-void Board::update_laser(){
+void Board::update_laser(bool player){
+	if(player){
 	//Reset board for updating
 	laser_track = new int*[ROWS];
 	for (int i = 0; i < ROWS; i++) {
@@ -79,6 +94,7 @@ void Board::update_laser(){
 		for (int j = 0; j < COLUMNS; j++) {
 			laser_track[i][j] = 0;
 		}
+	}
 	}
 	Laser_Track Laser;
 	if(Blue_turn){
@@ -102,7 +118,9 @@ void Board::update_laser(){
 		if (x < 0 || x == ROWS || y < 0 || y == COLUMNS){
 			break;
 		}
-		laser_track[x][y] = 1;
+		if(player){
+			laser_track[x][y] = 1;
+		}
 		hit = search(x,y);
 		if (hit != -1){
 			new_ori = Active[hit] -> laser_in(Laser.getOrientation());		
@@ -115,7 +133,6 @@ void Board::update_laser(){
 					if(Active[hit] -> getColour() < 0){Blue_win = false;}
 					else {Blue_win = true;}
 					Game_done = true;
-					break;
 				}
 				Active.erase(Active.begin()+hit);
 				
@@ -127,12 +144,14 @@ void Board::update_laser(){
 	}
 	updateRedAndBlueActive();
 	calculate_score();
-//	for (int i = 0; i < ROWS; i++) {
-//		for (int j = 0; j < COLUMNS; j++) {
-//			cout << laser_track[i][j] << " ";
-//		}
-//		cout << "\n" << endl;
-//	}
+	if (player){
+		for (int i = 0; i < ROWS; i++) {
+			for (int j = 0; j < COLUMNS; j++) {
+				cout << laser_track[i][j] << " ";
+			}
+			cout << "\n" << endl;
+		}
+	}
 }
 
 void Board:: calculate_score(){
@@ -212,6 +231,37 @@ void Board::update_board(){
 };
 
 
+void Board::test_minmax(void) {
+	//Red pieces
+
+	Active.push_back(new King(0,5,S,1));
+	Active.push_back(new Laser(S, 1));
+	Active.push_back(new Defender(0, 4, S, 1));
+	Active.push_back(new Defender(0, 6, S, 1));
+
+	Active.push_back(new Deflector(0, 7, E, 1));
+	Active.push_back(new Deflector(1, 2, S, 1));
+	Active.push_back(new Deflector(3, 0, N, 1));
+	Active.push_back(new Deflector(3, 7, E, 1));
+	Active.push_back(new Deflector(4, 0, E, 1));
+	Active.push_back(new Deflector(4, 7, N, 1));
+
+	Active.push_back(new Switch(3, 4, N, 1));
+
+	//Blue pieces
+	Active.push_back(new King(7, 4, S, -1));
+	Active.push_back(new Laser(S, -1));
+	Active.push_back(new Defender(7, 3, N, -1));
+	Active.push_back(new Defender(7, 5, N, -1));
+
+	Active.push_back(new Deflector(5, 9, S, -1));
+
+	Active.push_back(new Switch(4, 5, N, -1));
+
+	updateRedAndBlueActive();
+}
+
+
 void Board::init_ace(void) {
 	//Red pieces
 
@@ -248,9 +298,7 @@ void Board::init_ace(void) {
 	Active.push_back(new Switch(4, 4, E, -1));
 	Active.push_back(new Switch(4, 5, N, -1));
 
-	update_board();
 	updateRedAndBlueActive();
-	return;
 }
 
 void Board::updateRedAndBlueActive(){
@@ -553,7 +601,7 @@ void Board::playerChoiceDialog(){
 	char col,row;
 	regex regex_pattern_col("[a-j]");
 	regex regex_pattern_row("[1-8]");
-
+	std::cin.clear();
 	while (chosing_piece){
 		while (col_choice){
 
@@ -838,6 +886,9 @@ int Board::gameDialog(){
 
 bool Board::ComputerVsComputer(){
 	cout << "Lean back, and watch the computer win against itself" << endl;
+	cout << "blue size: " << BlueActive.size()<<endl;
+	cout << "red size: " <<RedActive.size()<<endl;
+	
 	return false;
 
 }
@@ -845,10 +896,11 @@ bool Board::ComputerVsComputer(){
 bool Board::PlayerVsPlayer(){
 	playerChoiceDialog();
 	update_board();
-	update_laser();
+	update_laser(true);
 	update_board();
 	calculate_score();
-	cout << score << endl; 
+	cout << score << endl;
+
 	if(Blue_turn){Blue_turn=false;}
 	else{Blue_turn=true;}
 	clear();
@@ -859,21 +911,24 @@ bool Board::PlayerVsPlayer(){
 
 bool Board::PlayerVsComputer(){
 	//Debug of Do_action
-	update_board();
-	clear();
 	playerChoiceDialog();
-	update_laser();
 	update_board();
-	Blue_turn = true;
-	
-	//Try and move deflector all the different ways
+	update_laser(true);
+	update_board();
+	calculate_score();
+	if(Blue_turn){Blue_turn=false;}
+	else{Blue_turn=true;}
+	clear();
 	return Game_done;
 
 }
 
 
 void clear(){
-	cout << "\n\n" << endl;
+	cout << "\n\n\n\n\n";
+	std::cin.clear();
+
+
 }
 
 

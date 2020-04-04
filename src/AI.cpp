@@ -1,5 +1,7 @@
 
 #include <iostream>
+#include <string.h>
+
 #include "AI.h"
 #include "Board.h"
 
@@ -33,16 +35,25 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 		for(int i=0; i<board.BlueActive.size(); i++){
 			//For each piece, total number of moves
 			for(int j=0; j<10; j++){
+				//dont try and turn the king
+				if (!strcmp(typeid(board.BlueActive[i][0]).name(),"4King") && j == 8){
+					break;
+				}
+
 				Board Temp_board = board;
 				Temp_board.Blue_turn=true;
-
 				//NODE REPRESENTS THE NODE/NEXT GAME state
 				Temp_board.Do_action(i, j);
-				Temp_board.update_board();
-				Temp_board.update_laser();
-				Temp_board.update_board();
-				//UNDO the move - piece back to ORG position.
-				bestValue = max(bestValue, miniMax(Temp_board, depth+1, false));
+				int res = Temp_board.Do_action(i, j);
+				if (res != 0){
+					continue;
+				}else{
+					Temp_board.update_laser(false);
+					//UNDO the move - piece back to ORG position.
+					bestValue = max(bestValue, miniMax(Temp_board, depth+1, false));
+					Temp_board.~Board();
+
+				}
 			}
 		}
 		return bestValue;
@@ -54,14 +65,21 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 		for(int i=0; i<board.RedActive.size(); i++){
 			//For each piece, total number of moves
 			for(int j=0; j<10; j++){
+				//Dont try and turn the king
+				if (!strcmp(typeid(board.BlueActive[i][0]).name(),"4King") && j == 8){
+					break;
+				}
 				Board Temp_board = board;
 				Temp_board.Blue_turn=false;
 
-				Temp_board.Do_action(i, j);
-				Temp_board.update_board();
-				Temp_board.update_laser();
-				Temp_board.update_board();
-				bestValue = min(bestValue, miniMax(Temp_board, depth+1, true));
+				int res = Temp_board.Do_action(i, j);
+				if (res != 0){
+					continue;
+				}else{
+					Temp_board.update_laser(false);
+					bestValue = min(bestValue, miniMax(Temp_board, depth+1, true));
+					Temp_board.~Board();
+				}
 			}
 		}
 		return bestValue;
@@ -78,39 +96,48 @@ Move AI::findMove(Board board){
 	bestMove.move = -1;
 	for(int i=0; i<board.BlueActive.size(); i++){
 		//Here the org. position could be saved.
+		cout << "piecename: " << typeid(board.BlueActive[i][0]).name() << endl;
 		for(int j=0; j<10; j++){
-
-			Board Temp_board = board;
-			Temp_board.Blue_turn=true;
-			// Make the move
-			Temp_board.Do_action(i, j);
-			//UNDO the move - piece back to ORG position.
-			Temp_board.update_board();
-			Temp_board.update_laser();
-			Temp_board.update_board();
-			int value = max(bestValue, miniMax(Temp_board, 0, false));
-			cout<<"Best val:"<<value<<endl;
-			//UNDO the move - piece back to ORG position.
-			//Evt. en destructor her på tidligere board
-			cout<<"Main"<<endl;
-
-			if(value > bestValue){
-
-				bestMove.piece = i;
-				bestMove.move = j;
-				bestValue = value;
+			//dont try and turn the king
+			if (!strcmp(typeid(board.BlueActive[i][0]).name(),"4King") && j == 8){
+				break;
 			}
-			cout<<"Return best val"<<bestValue<<endl;
+			Board Temp_board = board;
+			// Make the move
+			int res = Temp_board.Do_action(i, j);
+			if (res != 0){
+				//Don't check for invalid moves
+				continue;
+			}else{
+				//UNDO the move - piece back to ORG position.
+				Temp_board.update_laser(false);
+				int minvalue = miniMax(Temp_board, 0, false);
+				int value = max(bestValue,minvalue);
+				Temp_board.~Board();
+				// //UNDO the move - piece back to ORG position.
+				// //Evt. en destructor her på tidligere board
+				// cout<<"Main"<<endl;
 
+				if(value > bestValue){
+
+					bestMove.piece = i;
+					bestMove.move = j;
+					bestValue = value;
+				}
+			}
 		}
+		cout << "PiecesChecked: " << i+1 << "/" << board.BlueActive.size() << endl;
+
 	}
+
 	//~Temp_board();
 	cout<<"SIZE is blue"<<board.BlueActive.size()<<endl;
 	cout<<"SIZE is red"<<board.RedActive.size()<<endl;
 
 	//UNDO the move - piece back to ORG position.
 	cout<<"Return best val"<<bestValue<<endl;
-	cout <<"Move piece "<<bestMove.piece<<" Ypos: "<<" with move "<<bestMove.move<<endl;
+	cout <<"Move piece "<<bestMove.piece<<" Ypos: "<<" with move "<<bestMove.
+	move<< "\n\n\n"<< endl;
 	return bestMove;
 }
 

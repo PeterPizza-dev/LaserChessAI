@@ -58,8 +58,7 @@ int main(int argc, char* argv[])
     glutDisplayFunc(Display_callback);
     glutKeyboardFunc(Keyboard_event);
     init();
-	Move AI = computer.findMove(Game);
-	Game.Do_action(AI.piece, AI.move);
+
 
     glutMainLoop();
     return 0;
@@ -72,6 +71,7 @@ void init(){
     Game.init_ace();
     Game.update_board();
     gameDone = false;
+
     glutIdleFunc(Display_callback);
     glClearColor(0.6f,0.6f,0.6f,1.0);
     initGrid(COLUMNS,ROWS);
@@ -94,6 +94,16 @@ void call_draw_functions(){
     glutSwapBuffers();
 }
 
+void AI_move(){
+        Move AI = computer.findMove(Game);
+        Game.Do_action(AI.piece, AI.move);
+        Game.update_board();
+        Game.update_laser(true);
+        Game.update_board();
+        if(Game.Blue_turn){Game.Blue_turn=false;}
+	    else{Game.Blue_turn=true;}
+}
+
 void Display_callback(){
     if(!gameDone){
         call_draw_functions();
@@ -105,7 +115,15 @@ void Display_callback(){
                 }
                 break;
             case 2:
-                Game.PlayerVsComputer();
+                if (Game.Blue_turn){
+                    AI_move();
+                    gameDone = Game.Game_done;
+                }else{
+                    gameDone = Game.PlayerVsComputer();
+                }
+                if(gameDone){
+                    call_draw_functions();
+                }
                 break;
             case 3:
                 Game.ComputerVsComputer();

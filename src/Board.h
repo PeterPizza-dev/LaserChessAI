@@ -28,6 +28,8 @@ public:
 	Board(const Board& old_board);
 	int gameDialog();
 	void init_ace(void);
+	void test_minmax(void);
+
 	int** getstate(void);
 	int** getLaserTrack(void);
 	bool ComputerVsComputer();
@@ -36,7 +38,7 @@ public:
 	void update_board();
 	void Delete_active_vector();
 	int Do_action(int,int);
-	void update_laser();
+	void update_laser(bool);
 
 
 private:
