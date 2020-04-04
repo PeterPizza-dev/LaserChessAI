@@ -6,6 +6,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <regex>
+#include "AI.h"
 
 
 using namespace std;
@@ -32,7 +33,7 @@ void call_draw_functions();
 bool gameDone = false;
 int gameMode;
 Board Game;
-
+AI computer(true);
 //Template state
 
 int state[ROWS][COLUMNS] = 
@@ -48,6 +49,7 @@ int state[ROWS][COLUMNS] =
 
 int main(int argc, char* argv[])
 {
+	cout<<"LETS GO"<<endl;
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB);
     glutInitWindowSize(Width, Height);
@@ -56,6 +58,8 @@ int main(int argc, char* argv[])
     glutDisplayFunc(Display_callback);
     glutKeyboardFunc(Keyboard_event);
     init();
+
+
     glutMainLoop();
     return 0;
 }
@@ -67,11 +71,10 @@ void init(){
     Game.init_ace();
     Game.update_board();
     gameDone = false;
+
     glutIdleFunc(Display_callback);
     glClearColor(0.6f,0.6f,0.6f,1.0);
     initGrid(COLUMNS,ROWS);
-    
-    
 }
 
 
@@ -91,6 +94,16 @@ void call_draw_functions(){
     glutSwapBuffers();
 }
 
+void AI_move(){
+        Move AI = computer.findMove(Game);
+        Game.Do_action(AI.piece, AI.move);
+        Game.update_board();
+        Game.update_laser(true);
+        Game.update_board();
+        if(Game.Blue_turn){Game.Blue_turn=false;}
+	    else{Game.Blue_turn=true;}
+}
+
 void Display_callback(){
     if(!gameDone){
         call_draw_functions();
@@ -102,7 +115,15 @@ void Display_callback(){
                 }
                 break;
             case 2:
-                Game.PlayerVsComputer();
+                if (Game.Blue_turn){
+                    AI_move();
+                    gameDone = Game.Game_done;
+                }else{
+                    gameDone = Game.PlayerVsComputer();
+                }
+                if(gameDone){
+                    call_draw_functions();
+                }
                 break;
             case 3:
                 Game.ComputerVsComputer();
@@ -129,8 +150,6 @@ void Display_callback(){
             }else{init();}
             
         }
-        
-
     }
 }
 

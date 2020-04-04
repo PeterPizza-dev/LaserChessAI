@@ -3,7 +3,9 @@
 #include <iostream>
 #include <string.h>
 #include <regex>
+#include <bits/stdc++.h>  
 #include <array>
+#include "AI.h"
 
 
 using namespace std;
@@ -23,12 +25,68 @@ int play_board_check[8][10] =
      {2,1,0,0,0,0,0,0,2,0}};
 
 
+
 Board::Board() {
 	Blue_turn = true;
 };
+Board::~Board() {
+	//Remove all the entries in the vectors
+	Active.clear();
+	BlueActive.clear();
+	RedActive.clear();
+	//Free up the allocated memory, by swaping them with empty nonallocated vectors
+	vector<piece*>().swap(Active);
+	vector<piece*>().swap(BlueActive);
+	vector<piece*>().swap(RedActive);
 
-//
-void Board::update_laser(){
+	//delete the element in feild, and free memory
+	field = NULL;
+
+	//delete the element in feild, and free memory
+    laser_track = NULL;
+
+	
+};
+
+Board::Board(const Board &old_board) {
+	score = old_board.score;
+	Blue_turn = old_board.Blue_turn;
+	for (int i = 0; i < old_board.Active.size(); i++)
+		{
+			const char* pieceName =  typeid(old_board.Active[i][0]).name();
+			int x = old_board.Active[i] -> getX();
+			int y  = old_board.Active[i] -> getY();
+			direction ori = old_board.Active[i] -> getOrientation();
+			int colour =  old_board.Active[i] -> getColour();
+
+			if (!strcmp(pieceName, "4King")){
+				Active.push_back(new King(x,y,ori,colour));
+			}
+
+			else if (!strcmp(pieceName, "8Defender")){
+				Active.push_back(new Defender(x,y,ori,colour));
+			}
+
+			else if (!strcmp(pieceName, "9Deflector")){
+				Active.push_back(new Deflector(x,y,ori,colour));
+			}
+
+			else if (!strcmp(pieceName, "5Laser")){
+				Active.push_back(new Laser(ori,colour));
+			}
+			else if (!strcmp(pieceName, "6Switch")){
+				Active.push_back(new Switch(x,y,ori,colour));
+			}
+
+		}
+		updateRedAndBlueActive();
+
+}
+
+
+
+void Board::update_laser(bool player){
+	if(player){
 	//Reset board for updating
 	laser_track = new int*[ROWS];
 	for (int i = 0; i < ROWS; i++) {
@@ -36,6 +94,7 @@ void Board::update_laser(){
 		for (int j = 0; j < COLUMNS; j++) {
 			laser_track[i][j] = 0;
 		}
+	}
 	}
 	Laser_Track Laser;
 	if(Blue_turn){
@@ -59,7 +118,9 @@ void Board::update_laser(){
 		if (x < 0 || x == ROWS || y < 0 || y == COLUMNS){
 			break;
 		}
-		laser_track[x][y] = 1;
+		if(player){
+			laser_track[x][y] = 1;
+		}
 		hit = search(x,y);
 		if (hit != -1){
 			new_ori = Active[hit] -> laser_in(Laser.getOrientation());		
@@ -72,7 +133,6 @@ void Board::update_laser(){
 					if(Active[hit] -> getColour() < 0){Blue_win = false;}
 					else {Blue_win = true;}
 					Game_done = true;
-					break;
 				}
 				Active.erase(Active.begin()+hit);
 				
@@ -84,11 +144,13 @@ void Board::update_laser(){
 	}
 	updateRedAndBlueActive();
 	calculate_score();
-	for (int i = 0; i < ROWS; i++) {
-		for (int j = 0; j < COLUMNS; j++) {
-			cout << laser_track[i][j] << " ";
+	if (player){
+		for (int i = 0; i < ROWS; i++) {
+			for (int j = 0; j < COLUMNS; j++) {
+				cout << laser_track[i][j] << " ";
+			}
+			cout << "\n" << endl;
 		}
-		cout << "\n" << endl;
 	}
 }
 
@@ -169,6 +231,37 @@ void Board::update_board(){
 };
 
 
+void Board::test_minmax(void) {
+	//Red pieces
+
+	Active.push_back(new King(0,5,S,1));
+	Active.push_back(new Laser(S, 1));
+	Active.push_back(new Defender(0, 4, S, 1));
+	Active.push_back(new Defender(0, 6, S, 1));
+
+	Active.push_back(new Deflector(0, 7, E, 1));
+	Active.push_back(new Deflector(1, 2, S, 1));
+	Active.push_back(new Deflector(3, 0, N, 1));
+	Active.push_back(new Deflector(3, 7, E, 1));
+	Active.push_back(new Deflector(4, 0, E, 1));
+	Active.push_back(new Deflector(4, 7, N, 1));
+
+	Active.push_back(new Switch(3, 4, N, 1));
+
+	//Blue pieces
+	Active.push_back(new King(7, 4, S, -1));
+	Active.push_back(new Laser(S, -1));
+	Active.push_back(new Defender(7, 3, N, -1));
+	Active.push_back(new Defender(7, 5, N, -1));
+
+	Active.push_back(new Deflector(5, 9, S, -1));
+
+	Active.push_back(new Switch(4, 5, N, -1));
+
+	updateRedAndBlueActive();
+}
+
+
 void Board::init_ace(void) {
 	//Red pieces
 
@@ -205,9 +298,7 @@ void Board::init_ace(void) {
 	Active.push_back(new Switch(4, 4, E, -1));
 	Active.push_back(new Switch(4, 5, N, -1));
 
-	update_board();
 	updateRedAndBlueActive();
-	return;
 }
 
 void Board::updateRedAndBlueActive(){
@@ -238,12 +329,14 @@ int Board::search( int PosX, int PosY) {
 	return -1;
 };
 
-void Board::validMove(int index_piece, int x, int y, bool *ret_safe_move, bool *ret_piece_there){
+void Board::validMove(int index_piece, int x, int y, bool *ret_safe_move, bool *ret_piece_there, bool print){
 	int res = search(x,y);
 	int colour = Active[index_piece] -> getColour();	
 	//Check out of bounds
 	if (x == ROWS || y == COLUMNS || x < 0 || y < 0){
-		cout << "You are moving a piece out of the board. This is not legal" << endl;
+		if (print){
+			cout << "You are moving a piece out of the board. This is not legal" << endl;
+		}
 		*ret_safe_move = false;
 		*ret_piece_there = false;
 	}
@@ -266,8 +359,9 @@ void Board::validMove(int index_piece, int x, int y, bool *ret_safe_move, bool *
 		}
 
 	}else{
-
-		cout << "A piece is already on this location" << endl;
+		if(print){
+			cout << "A piece is already on this location" << endl;
+		}
 		if (colour < 0 && play_board_check[x][y] == 1){
 			*ret_safe_move = false;
 			*ret_piece_there = true;
@@ -279,9 +373,11 @@ void Board::validMove(int index_piece, int x, int y, bool *ret_safe_move, bool *
 			*ret_safe_move = false;
 			*ret_piece_there = true;
 		}else{
+			if(print){
 			cout << "Even if you move a switch, you can't move into a coloured space, which isn't yours." << endl;
 			*ret_safe_move = false;
 			*ret_piece_there = false;
+			}
 		}
 		
 	}
@@ -298,7 +394,7 @@ void Board::switch_pieces(int index, int x, int y){
 	Active[index]        -> setY(y);
 }
 
-int Board::move( int index, direction move_dire) {
+int Board::move( int index, direction move_dire, bool print) {
 	int x,y;
 	bool res_safe,res_taken;
 	std::vector <piece*> player_vec;
@@ -310,7 +406,7 @@ int Board::move( int index, direction move_dire) {
 		case NE:
 			x = Active[index]->getX() - 1;
 			y = Active[index]->getY() + 1;
-			validMove(index,x,y,&res_safe,&res_taken);
+			validMove(index,x,y,&res_safe,&res_taken,print);
 			if(res_safe){
 				Active[index]->setX(x);
 				Active[index]->setY(y);
@@ -330,7 +426,7 @@ int Board::move( int index, direction move_dire) {
 		case E:
 			x = Active[index]->getX();
 			y = Active[index]->getY() + 1;
-			validMove(index,x,y,&res_safe,&res_taken);
+			validMove(index,x,y,&res_safe,&res_taken,print);
 			if(res_safe){
 				Active[index]->setY(y);
 				return 0;
@@ -349,7 +445,7 @@ int Board::move( int index, direction move_dire) {
 		case N:
 			x = Active[index]->getX() - 1;
 			y = Active[index]->getY();
-			validMove(index,x,y,&res_safe,&res_taken); 
+			validMove(index,x,y,&res_safe,&res_taken,print); 
 			if(res_safe){
 				Active[index]->setX(x);
 				return 0;
@@ -368,7 +464,7 @@ int Board::move( int index, direction move_dire) {
 		case W:
 			x = Active[index]->getX();
 			y = Active[index]->getY() -1;
-			validMove(index,x,y,&res_safe,&res_taken);
+			validMove(index,x,y,&res_safe,&res_taken,print);
 			if(res_safe){
 				Active[index]->setY(y);
 				return 0;
@@ -386,7 +482,7 @@ int Board::move( int index, direction move_dire) {
 		case S:
 			x = Active[index]->getX() + 1;
 			y = Active[index]->getY();
-			validMove(index,x,y,&res_safe,&res_taken);
+			validMove(index,x,y,&res_safe,&res_taken,print);
 			if(res_safe){
 				Active[index]->setX(x);
 				return 0;
@@ -404,7 +500,7 @@ int Board::move( int index, direction move_dire) {
 		case SE:
 			x = Active[index]->getX() + 1;
 			y = Active[index]->getY() + 1;
-			validMove(index,x,y,&res_safe,&res_taken);
+			validMove(index,x,y,&res_safe,&res_taken,print);
 			if(res_safe){
 				Active[index]->setX(x);
 				Active[index]->setY(y);
@@ -423,7 +519,7 @@ int Board::move( int index, direction move_dire) {
 		case SW:
 			x = Active[index]->getX() + 1;
 			y = Active[index]->getY() - 1;
-			validMove(index,x,y,&res_safe,&res_taken);
+			validMove(index,x,y,&res_safe,&res_taken,print);
 			if(res_safe){
 				Active[index]->setX(x);
 				Active[index]->setY(y);
@@ -442,7 +538,7 @@ int Board::move( int index, direction move_dire) {
 		case NW:
 			x = Active[index]->getX() - 1;
 			y = Active[index]->getY() - 1;
-			validMove(index,x,y,&res_safe,&res_taken);
+			validMove(index,x,y,&res_safe,&res_taken,print);
 			if(res_safe){
 				Active[index]->setX(x);
 				Active[index]->setY(y);
@@ -505,7 +601,7 @@ void Board::playerChoiceDialog(){
 	char col,row;
 	regex regex_pattern_col("[a-j]");
 	regex regex_pattern_row("[1-8]");
-
+	std::cin.clear();
 	while (chosing_piece){
 		while (col_choice){
 
@@ -581,36 +677,36 @@ void Board::playerChoiceDialog(){
 		}
 		switch(choice){
 			case 0:
-				if(move(piece_index,N) != 0){break;}
+				if(move(piece_index,N,true) != 0){break;}
 				else{chose_the_move = false; break;}
 			
 			case 1:
-				if(move(piece_index,NE) != 0){break;}
+				if(move(piece_index,NE,true) != 0){break;}
 				else{chose_the_move = false; break;}
 			
 			case 2:
-				if(move(piece_index,E) != 0){break;}
+				if(move(piece_index,E,true) != 0){break;}
 				else{chose_the_move = false; break;}
 			
 			case 3:
-				if(move(piece_index,SE) != 0){break;}
+				if(move(piece_index,SE,true) != 0){break;}
 				else{chose_the_move = false; break;}
 			
 			
 			case 4:
-				if(move(piece_index,S) != 0){break;}
+				if(move(piece_index,S,true) != 0){break;}
 				else{chose_the_move = false; break;}
 			
 			case 5:
-				if(move(piece_index,SW) != 0){break;}
+				if(move(piece_index,SW,true) != 0){break;}
 				else{chose_the_move = false; break;}
 			
 			case 6:
-				if(move(piece_index,W) != 0){break;}
+				if(move(piece_index,W,true) != 0){break;}
 				else{chose_the_move = false; break;}
 			
 			case 7:
-				if(move(piece_index,NW) != 0){break;}
+				if(move(piece_index,NW,true) != 0){break;}
 				else{chose_the_move = false; break;}
 			
 			
@@ -662,7 +758,6 @@ void Board::playerChoiceDialog(){
 		}
 
 	}
-	
 }
 int Board::Do_action(int index, int choice){
 	int piece_index;
@@ -676,28 +771,28 @@ int Board::Do_action(int index, int choice){
 
 	switch(choice){
 		case 0:
-			return move(piece_index,N);
+			return move(piece_index,N,false);
 		
 		case 1:
-			return move(piece_index,NE);
+			return move(piece_index,NE,false);
 		
 		case 2:
-			return move(piece_index,E);
+			return move(piece_index,E,false);
 		
 		case 3:
-			return move(piece_index,SE);
+			return move(piece_index,SE,false);
 		
 		
 		case 4:
-			return move(piece_index,S);
+			return move(piece_index,S,false);
 		
 		case 5:
-			return move(piece_index,SW);
+			return move(piece_index,SW,false);
 		
 		case 6:
-			return move(piece_index,W);
+			return move(piece_index,W,false);
 		case 7:
-			return move(piece_index,NW);		
+			return move(piece_index,NW,false);		
 		
 		case 8:
 			switch(Active[piece_index]->getOrientation()){
@@ -791,6 +886,9 @@ int Board::gameDialog(){
 
 bool Board::ComputerVsComputer(){
 	cout << "Lean back, and watch the computer win against itself" << endl;
+	cout << "blue size: " << BlueActive.size()<<endl;
+	cout << "red size: " <<RedActive.size()<<endl;
+	
 	return false;
 
 }
@@ -798,10 +896,11 @@ bool Board::ComputerVsComputer(){
 bool Board::PlayerVsPlayer(){
 	playerChoiceDialog();
 	update_board();
-	update_laser();
+	update_laser(true);
 	update_board();
 	calculate_score();
-	cout << score << endl; 
+	cout << score << endl;
+
 	if(Blue_turn){Blue_turn=false;}
 	else{Blue_turn=true;}
 	clear();
@@ -812,20 +911,24 @@ bool Board::PlayerVsPlayer(){
 
 bool Board::PlayerVsComputer(){
 	//Debug of Do_action
-	Blue_turn = false;
-	//Try and move deflector all the different ways
-	
-	cout << Do_action(11,debug_counter) << endl;
+	playerChoiceDialog();
 	update_board();
-	debug_counter++;
-	debug_counter %= 10;
-	return false;
+	update_laser(true);
+	update_board();
+	calculate_score();
+	if(Blue_turn){Blue_turn=false;}
+	else{Blue_turn=true;}
+	clear();
+	return Game_done;
 
 }
 
 
 void clear(){
-	cout << "\n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n" << endl;
+	cout << "\n\n\n\n\n";
+	std::cin.clear();
+
+
 }
 
 
