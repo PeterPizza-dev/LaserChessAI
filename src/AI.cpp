@@ -66,7 +66,7 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 			//For each piece, total number of moves
 			for(int j=0; j<10; j++){
 				//Dont try and turn the king
-				if (!strcmp(typeid(board.BlueActive[i][0]).name(),"4King") && j == 8){
+				if (!strcmp(typeid(board.RedActive[i][0]).name(),"4King") && j == 8){
 					break;
 				}
 				Board Temp_board = board;
