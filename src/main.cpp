@@ -55,7 +55,8 @@ int main(int argc, char* argv[])
     glutInitWindowSize(Width, Height);
     glutCreateWindow("Laser Chess");
     glutReshapeFunc(reshape_callback);
-    glutDisplayFunc(Display_callback);
+    glutDisplayFunc(call_draw_functions);
+    glutIdleFunc(Display_callback);
     glutKeyboardFunc(Keyboard_event);
     init();
 
@@ -71,8 +72,6 @@ void init(){
     Game.init_ace();
     Game.update_board();
     gameDone = false;
-
-    glutIdleFunc(Display_callback);
     glClearColor(0.6f,0.6f,0.6f,1.0);
     initGrid(COLUMNS,ROWS);
 }
@@ -103,6 +102,8 @@ void AI_move(){
         if(Game.Blue_turn){Game.Blue_turn=false;}
 	    else{Game.Blue_turn=true;}
 }
+
+
 
 void Display_callback(){
     if(!gameDone){
