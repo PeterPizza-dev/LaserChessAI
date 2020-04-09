@@ -33,7 +33,7 @@ void call_draw_functions();
 bool gameDone = false;
 int gameMode;
 Board Game;
-AI computer(true);
+AI computer_Red(false);
 //Template state
 
 int state[ROWS][COLUMNS] = 
@@ -55,7 +55,8 @@ int main(int argc, char* argv[])
     glutInitWindowSize(Width, Height);
     glutCreateWindow("Laser Chess");
     glutReshapeFunc(reshape_callback);
-    glutDisplayFunc(Display_callback);
+    glutDisplayFunc(call_draw_functions);
+    glutIdleFunc(Display_callback);
     glutKeyboardFunc(Keyboard_event);
     init();
 
@@ -71,8 +72,6 @@ void init(){
     Game.init_ace();
     Game.update_board();
     gameDone = false;
-
-    glutIdleFunc(Display_callback);
     glClearColor(0.6f,0.6f,0.6f,1.0);
     initGrid(COLUMNS,ROWS);
 }
@@ -95,7 +94,7 @@ void call_draw_functions(){
 }
 
 void AI_move(){
-        Move AI = computer.findMove(Game);
+        Move AI = computer_Red.findMove_AB(Game);
         Game.Do_action(AI.piece, AI.move);
         Game.update_board();
         Game.update_laser(true);
@@ -103,6 +102,8 @@ void AI_move(){
         if(Game.Blue_turn){Game.Blue_turn=false;}
 	    else{Game.Blue_turn=true;}
 }
+
+
 
 void Display_callback(){
     if(!gameDone){
@@ -115,7 +116,7 @@ void Display_callback(){
                 }
                 break;
             case 2:
-                if (Game.Blue_turn){
+                if (!Game.Blue_turn){
                     AI_move();
                     gameDone = Game.Game_done;
                 }else{
