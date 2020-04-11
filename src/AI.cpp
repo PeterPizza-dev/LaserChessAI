@@ -144,7 +144,7 @@ Move AI::findMove(Board board){
 				}
 			}
 		}
-		cout << "PiecesChecked: " << i << "/" << turn.size() << endl;
+		cout << "PiecesChecked: " << i+1 << "/" << turn.size() << endl;
 	}
 	//Best move is returned
 	return bestMove;
@@ -160,8 +160,8 @@ Move AI::findMove_AB(Board board){
 	std::vector <piece*> turn;
 	isBlue ? turn=board.BlueActive : turn=board.RedActive;
 	//Initial alpha and beta's
-	int alpha = -1000;
-	int beta = 1000;
+	alpha = -1000;
+	beta = 1000;
 	//Piece
 	for(int i=0; i<turn.size(); i++){
 		//Move
@@ -182,50 +182,38 @@ Move AI::findMove_AB(Board board){
 				int minvalue = Min_Value(Temp_board, 0, alpha, beta);
 				int value = max(bestValue,minvalue);
 				Temp_board.~Board();
-
-				//ALPHA BETA COMMENTS HER
-				cout<<"Beta er :"<<beta<<endl;
-				if(value >= beta){
-					return bestMove;
-				}
-				alpha = max(alpha, value);
-				cout<<"Alpha er :"<<alpha<<endl;
-				Temp_board.~Board();
-	            if (beta <= alpha)
-	                break;
 				if(value > bestValue){
 					bestMove.piece = i;
 					bestMove.move = j;
 					bestValue = value;
 				}
-
+				//Updating alpha
+	            alpha = max(alpha, value);
+	            //If the result of the move was is bigger than beta, then prune the rest
+				if(value>=beta){
+					break;
+				}
 			}
 		}
-		cout << "PiecesChecked: " << i << "/" << turn.size() << endl;
+		cout << "PiecesChecked: " << i+1 << "/" << turn.size() << endl;
 	}
-	//board.Blue_turn=true;
-	//~Temp_board();
-	cout<<"SIZE is blue"<<board.BlueActive.size()<<endl;
-	cout<<"SIZE is red"<<board.RedActive.size()<<endl;
-
-	//UNDO the move - piece back to ORG position.
-	cout<<"Return best val"<<bestValue<<endl;
-	cout <<"Move piece "<<bestMove.piece<<" Ypos: "<<" with move "<<bestMove.
-	move<< "\n\n\n"<< endl;
 	return bestMove;
 }
 
-int AI::Max_Value(Board board, int depth, int alpha, int beta){
+int AI::Max_Value(Board board, int depth, int a, int b){
 	int score = utility(board);
 	std::vector <piece*> turn;
 	std::vector <piece*> notTurn;
 	isBlue ? turn=board.BlueActive: turn=board.RedActive;
 	isBlue ? notTurn=board.RedActive : notTurn=board.BlueActive;
+	//Updating global alpha beta
+	alpha = a;
+	beta = b;
+	//Max depth
 	if (depth == 2){
 		return score;
 	}
-	//If the node is a leaf node return the vale
-	//ALSO include some sort of terminal test
+	//Terminal test
 	if(score > 900 || score < -900){
 		return score;
 	}
@@ -241,39 +229,39 @@ int AI::Max_Value(Board board, int depth, int alpha, int beta){
 			}
 			Board Temp_board = board;
 			isBlue ? Temp_board.Blue_turn=true : Temp_board.Blue_turn=false ;
-			//NODE REPRESENTS THE NODE/NEXT GAME state
 			Temp_board.Do_action(i, j);
 			int res = Temp_board.Do_action(i, j);
 			if (res != 0){
 				continue;
 			}else{
 				Temp_board.update_laser(false);
-				//UNDO the move - piece back to ORG position.
 				bestValue = max(bestValue, Min_Value(Temp_board, depth+1, alpha, beta));
-				if(bestValue >= beta){
-					return bestValue;
-				}
-				alpha = max(alpha, bestValue);
+	            // Alpha Beta Pruning
 				Temp_board.~Board();
-	            if (beta <= alpha)
-	                break;
+	            alpha = max(alpha, bestValue);
+
+				if(bestValue>=beta){
+						break;
+				}
 			}
-            // Alpha Beta Pruning
 		}
 	}
 	return bestValue;
 }
-int AI::Min_Value(Board board, int depth, int alpha, int beta){
+int AI::Min_Value(Board board, int depth, int a, int b){
 	int score = utility(board);
 	std::vector <piece*> turn;
 	std::vector <piece*> notTurn;
+	//Updating global alpha beta
+	alpha=a;
+	beta=b;
 	isBlue ? turn=board.BlueActive: turn=board.RedActive;
 	isBlue ? notTurn=board.RedActive : notTurn=board.BlueActive;
+	//max depth
 	if (depth == 2){
 		return score;
 	}
-	//If the node is a leaf node return the vale
-	//ALSO include some sort of terminal test
+	//terminal test
 	if(score > 900 || score < -900){
 		return score;
 	}
@@ -297,13 +285,13 @@ int AI::Min_Value(Board board, int depth, int alpha, int beta){
 				Temp_board.update_laser(false);
 				bestValue = min(bestValue, Max_Value(Temp_board, depth+1, alpha, beta));
 				Temp_board.~Board();
-				if(bestValue <= alpha){
-					return bestValue;
-				}
-				beta = min(beta, bestValue);
+	            // Alpha Beta Pruning
 				Temp_board.~Board();
-	            if (beta <= alpha)
-	                break;
+	            beta = min(beta, bestValue);
+
+				if(bestValue<=alpha){
+						break;
+				}
 			}
 		}
 	}

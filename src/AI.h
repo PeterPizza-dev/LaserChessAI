@@ -15,6 +15,9 @@ public:
 	AI(bool isBlue);
 	//Bool value to toggle colour of the AI
 	bool isBlue;
+	//Alpha betas for pruning
+	int alpha;
+	int beta;
 	//Evaluation function for the Game state
 	int utility(Board board);
 
@@ -24,8 +27,8 @@ public:
 	Move findMove(Board board);
 
 	//Max and min fnctions for the minimax Alpha-Beta pruning
-	int Max_Value(Board board, int depth, int alpha, int beta);
-	int Min_Value(Board board, int depth, int alpha, int beta);
+	int Max_Value(Board board, int depth, int a, int b);
+	int Min_Value(Board board, int depth, int a, int b);
 	//First Max step of the Minimax w. alpha beta pruning, returns a type of struct Move
 	Move findMove_AB(Board board);
 
