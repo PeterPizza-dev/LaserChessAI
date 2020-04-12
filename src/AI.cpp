@@ -288,7 +288,6 @@ int AI::Min_Value(Board board, int depth, int a, int b){
 				bestValue = min(bestValue, Max_Value(Temp_board, depth+1, alpha, beta));
 				Temp_board.~Board();
 	            // Alpha Beta Pruning
-				Temp_board.~Board();
 	            beta = min(beta, bestValue);
 
 				if(bestValue<=alpha){
