@@ -94,10 +94,7 @@ void call_draw_functions(){
 
 void AI_move(){
         AI computer_Red(false);
-        int v = computer_Red.findMove_AB_2(Game,computer_Red.depth_cutoff,-2000,2000,true);
-        cout << "Value: " <<v << endl; 
-        cout << computer_Red.bestMove2.piece << endl;
-        cout << computer_Red.bestMove2.move << endl;
+        computer_Red.findMove_AB_2(Game,computer_Red.depth_cutoff,-2000,2000,true);
         Game.Do_action(computer_Red.bestMove2.piece, computer_Red.bestMove2.move);
         Game.update_board();
         Game.update_laser(true);
