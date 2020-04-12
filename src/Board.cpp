@@ -172,9 +172,9 @@ void Board:: calculate_score(){
 		if(!strcmp(pieceName,"4King")){
 			BlueSum += 1000;
 		}else if(!strcmp(pieceName,"8Defender")){
-			BlueSum += 2;
+			BlueSum += 20;
 		}else if(!strcmp(pieceName,"9Deflector")){
-			BlueSum += 4;
+			BlueSum += 40;
 		}
 	}
 	for (unsigned int i = 0; i < RedActive.size(); i++) {
@@ -182,9 +182,9 @@ void Board:: calculate_score(){
 		if(!strcmp(pieceName,"4King")){
 			RedSum += 1000;
 		}else if(!strcmp(pieceName,"8Defender")){
-			RedSum += 2;
+			RedSum += 20;
 		}else if(!strcmp(pieceName,"9Deflector")){
-			RedSum += 4;
+			RedSum += 40;
 		}
 	}
 	for(int i=0; i< ROWS;i++){
@@ -193,14 +193,17 @@ void Board:: calculate_score(){
 		}
 	}
 	//Debugging
-	/*cout << "\n bluesum is:" << BlueSum;
+	/*
+	cout << "\n bluesum is:" << BlueSum;
 	cout << "\n redsum is:" << RedSum;
 	cout << "\n LaserSum is: " << LaserSum;
-	cout << "\n Blue_turn us" << Blue_turn;
+	cout << "\n Blue_turn us: " << Blue_turn << "\n";
 	*/
-	if(Blue_turn){BlueSum+LaserSum;}
-		else{RedSum+LaserSum;}
+
+	if(Blue_turn){BlueSum=BlueSum+LaserSum;}
+		else{RedSum=RedSum+LaserSum;}
 	score = (RedSum-BlueSum);
+	//cout << "\n score is: " << score <<"\n";
 }
 //all pieces blue are negative. red pieces are positive
 void Board::update_board(){
