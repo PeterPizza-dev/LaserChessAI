@@ -30,9 +30,9 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 	//Temporary vectors to keep track of which turn it is
 	std::vector <piece*> turn;
 	std::vector <piece*> notTurn;
-	isBlue ? turn=board.BlueActive: turn=board.RedActive;
+	isBlue ? turn=board.BlueActive : turn=board.RedActive;
 	isBlue ? notTurn=board.RedActive : notTurn=board.BlueActive;
-
+	
 	//Terminal test
 	if(score > 900 || score < -900){
 		return score;
@@ -80,7 +80,7 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 		int bestValue = 1000;
 		//For every move possible - for each piece
 		//Piece
-		for(int i=0; i<board.BlueActive.size(); i++){
+		for(int i= 0; i < notTurn.size(); i++){
 			//For each piece, total number of moves
 			for(int j=0; j<10; j++){
 				COUNT++;
@@ -240,11 +240,16 @@ int AI::Max_Value(Board board, int depth, int a, int b){
 	std::vector <piece*> notTurn;
 	isBlue ? turn=board.BlueActive: turn=board.RedActive;
 	isBlue ? notTurn=board.RedActive : notTurn=board.BlueActive;
+	
 	//Updating global alpha beta
 	alpha = a;
 	beta = b;
 	//Max depth
+<<<<<<< HEAD
 	if (depth == 3){
+=======
+	if (depth == 4){
+>>>>>>> caf3c9acadc432e3b181924b749a0cc66295ca71
 		return score;
 	}
 	//Terminal test
@@ -294,7 +299,11 @@ int AI::Min_Value(Board board, int depth, int a, int b){
 	isBlue ? turn=board.BlueActive: turn=board.RedActive;
 	isBlue ? notTurn=board.RedActive : notTurn=board.BlueActive;
 	//max depth
+<<<<<<< HEAD
 	if (depth == 3){
+=======
+	if (depth == 4){
+>>>>>>> caf3c9acadc432e3b181924b749a0cc66295ca71
 		return score;
 	}
 	//terminal test
@@ -322,7 +331,6 @@ int AI::Min_Value(Board board, int depth, int a, int b){
 				Temp_board.update_laser(false);
 				bestValue = min(bestValue, Max_Value(Temp_board, depth+1, alpha, beta));
 	            // Alpha Beta Pruning
-				Temp_board.~Board();
 	            beta = min(beta, bestValue);
 	            // Alpha Beta Pruning
 	            if (beta <= alpha)
