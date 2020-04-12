@@ -33,7 +33,7 @@ void call_draw_functions();
 bool gameDone = false;
 int gameMode;
 Board Game;
-AI computer(true);
+AI computer_Red(false);
 //Template state
 
 int state[ROWS][COLUMNS] = 
@@ -94,7 +94,7 @@ void call_draw_functions(){
 }
 
 void AI_move(){
-        Move AI = computer.findMove(Game);
+        Move AI = computer_Red.findMove_AB(Game);
         Game.Do_action(AI.piece, AI.move);
         Game.update_board();
         Game.update_laser(true);
@@ -116,7 +116,7 @@ void Display_callback(){
                 }
                 break;
             case 2:
-                if (Game.Blue_turn){
+                if (!Game.Blue_turn){
                     AI_move();
                     gameDone = Game.Game_done;
                 }else{

@@ -184,7 +184,7 @@ void Board:: calculate_score(){
 			RedSum += 4;
 		}
 	}
-	score = (BlueSum-RedSum);
+	score = (RedSum-BlueSum);
 }
 //all pieces blue are negative. red pieces are positive
 void Board::update_board(){
