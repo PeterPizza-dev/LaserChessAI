@@ -39,7 +39,7 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 	}
 	//This is the cut-off depth to the search, the depth is +1
 	//Because the first Max step is done in the find move function
-	if (depth == 1){
+	if (depth == 2){
 		return score;
 	}
 
@@ -60,19 +60,17 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 				//Keeps track of current turn in the game, to search for new move
 				isBlue ? Temp_board.Blue_turn=true : Temp_board.Blue_turn=false ;
 				//Do the action
-				Temp_board.Do_action(i, j);
 				int res = Temp_board.Do_action(i, j);
 				//If result is -1, continue to next move
 				if (res != 0){
 					continue;
 				}
 				//Else we update and evaluate board state
-				else{
 					Temp_board.update_laser(false);
 					//Recursive call to miniMax
 					bestValue = max(bestValue, miniMax(Temp_board, depth+1, false));
 					Temp_board.~Board();
-				}
+					cout<<"Best value is: "<<bestValue<<endl;
 			}
 		}
 		return bestValue;
@@ -100,6 +98,7 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 					Temp_board.update_laser(false);
 					bestValue = min(bestValue, miniMax(Temp_board, depth+1, true));
 					Temp_board.~Board();
+					cout<<"MIN value is: "<<bestValue<<endl;
 				}
 			}
 		}
@@ -266,7 +265,6 @@ int AI::Max_Value(Board board, int depth, int a, int b){
 			}
 			Board Temp_board = board;
 			isBlue ? Temp_board.Blue_turn=true : Temp_board.Blue_turn=false ;
-			Temp_board.Do_action(i, j);
 			int res = Temp_board.Do_action(i, j);
 			if (res != 0){
 				continue;
@@ -323,11 +321,9 @@ int AI::Min_Value(Board board, int depth, int a, int b){
 			}else{
 				Temp_board.update_laser(false);
 				bestValue = min(bestValue, Max_Value(Temp_board, depth+1, alpha, beta));
-				Temp_board.~Board();
 	            // Alpha Beta Pruning
 				Temp_board.~Board();
 	            beta = min(beta, bestValue);
-
 	            // Alpha Beta Pruning
 	            if (beta <= alpha)
 	                break;
