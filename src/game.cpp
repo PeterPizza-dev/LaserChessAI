@@ -32,7 +32,7 @@ void Deflector(int,int,direction,int);
 void Defender(int,int,direction,int);
 void Switch(int,int,direction,int);
 void King(int,int,int);
-void draw_laser(int,int,int,int);
+void draw_laser(int,int,direction);
 
 void initGrid(int x, int y){
     gridX = x;
@@ -88,13 +88,12 @@ void drawPieces(int** state){
 void drawLaserTrack(int** laser_track, bool Blue_turn){
     int x_prev,y_prev;
     if(Blue_turn){
-
         for (int i=0; i<gridX;i++){
             for (int j=0;j<gridY;j++){
-            if (laser_track[j][i] == 1){
-                draw_laser(i,(gridY-1)-j,x_prev,y_prev );
-                x_prev = i;
-                y_prev = j;
+            std::cout << "value of laser_Track: " << laser_track[j][i] << std::endl;
+            
+            if (laser_track[j][i] > 0){
+                draw_laser(i,(gridY-1)-j, direction(abs(laser_track[j][i]) % 10));
                 }
             }
         }
@@ -102,13 +101,45 @@ void drawLaserTrack(int** laser_track, bool Blue_turn){
 
 }
 
-void draw_laser(int x, int y, int x_prev, int y_prev){
-    glColor3f(0.0,1.0,0.0);
-    glLineWidth(5);
-    glBegin(GL_LINE);
-        glVertex2f(x+0.5,y);
-        glVertex2f(x+0.5,y+1);
-    glEnd();
+void draw_laser(int x, int y, direction ori){
+    glColor3f(1.0,0.0,0.0);
+    std::cout << "print" << std::endl;
+    switch(ori){
+        case N:
+            glBegin(GL_TRIANGLES);
+                glVertex2f(x+0.3,y+0.2);
+                glVertex2f(x+0.7,y+0.2);
+                glVertex2f(x+0.5,y+0.05);    
+            glEnd();
+            break;
+    
+        case E:
+            glBegin(GL_TRIANGLES);
+                glVertex2f(x+0.3,y+0.2);
+                glVertex2f(x+0.7,y+0.2);
+                glVertex2f(x+0.5,y+0.05);    
+            glEnd();
+            break;
+            
+        case S:
+            glBegin(GL_TRIANGLES);
+                glVertex2f(x+0.3,y+0.2);
+                glVertex2f(x+0.7,y+0.2);
+                glVertex2f(x+0.5,y+0.05);    
+            glEnd();
+            break;
+    
+        case W:
+            glBegin(GL_TRIANGLES);
+                glVertex2f(x+0.3,y+0.2);
+                glVertex2f(x+0.7,y+0.2);
+                glVertex2f(x+0.5,y+0.05);    
+            glEnd();
+            break;
+
+        default:
+            break;
+    }
     
 }
 

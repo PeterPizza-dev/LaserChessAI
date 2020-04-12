@@ -1,5 +1,6 @@
 #include "Board.h"
 #include "piece.h"
+#include "game.h"
 #include <iostream>
 #include <string.h>
 #include <regex>
@@ -118,7 +119,7 @@ void Board::update_laser(bool player){
 			break;
 		}
 		if(player){
-			laser_track[x][y] = 1;
+			laser_track[x][y] = 10 + Laser.getOrientation();
 		}
 		hit = search(x,y);
 		if (hit != -1){
@@ -899,7 +900,11 @@ bool Board::PlayerVsPlayer(){
 	playerChoiceDialog();
 	update_board();
 	update_laser(true);
-	update_board();
+
+
+	
+	
+	//update_board();
 
 	if(Blue_turn){Blue_turn=false;}
 	else{Blue_turn=true;}

@@ -245,11 +245,8 @@ int AI::Max_Value(Board board, int depth, int a, int b){
 	alpha = a;
 	beta = b;
 	//Max depth
-<<<<<<< HEAD
 	if (depth == 3){
-=======
-	if (depth == 4){
->>>>>>> caf3c9acadc432e3b181924b749a0cc66295ca71
+
 		return score;
 	}
 	//Terminal test
@@ -299,11 +296,7 @@ int AI::Min_Value(Board board, int depth, int a, int b){
 	isBlue ? turn=board.BlueActive: turn=board.RedActive;
 	isBlue ? notTurn=board.RedActive : notTurn=board.BlueActive;
 	//max depth
-<<<<<<< HEAD
 	if (depth == 3){
-=======
-	if (depth == 4){
->>>>>>> caf3c9acadc432e3b181924b749a0cc66295ca71
 		return score;
 	}
 	//terminal test
