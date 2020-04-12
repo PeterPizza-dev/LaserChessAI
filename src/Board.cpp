@@ -897,8 +897,6 @@ bool Board::PlayerVsPlayer(){
 	update_board();
 	update_laser(true);
 	update_board();
-	calculate_score();
-	cout << score << endl;
 
 	if(Blue_turn){Blue_turn=false;}
 	else{Blue_turn=true;}
@@ -910,11 +908,11 @@ bool Board::PlayerVsPlayer(){
 
 bool Board::PlayerVsComputer(){
 	//Debug of Do_action
+	std::cin.clear();
 	playerChoiceDialog();
 	update_board();
 	update_laser(true);
 	update_board();
-	calculate_score();
 	if(Blue_turn){Blue_turn=false;}
 	else{Blue_turn=true;}
 	clear();
