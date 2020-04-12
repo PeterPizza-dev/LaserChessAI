@@ -211,11 +211,11 @@ Move AI::findMove_AB(Board board){
 					bestValue = value;
 				}
 				//Updating alpha
-	            alpha = max(alpha, value);
-	            //If the result of the move was is bigger than beta, then prune the rest
-				if(value>=beta){
-					break;
-				}
+	            alpha = max(alpha, bestValue);
+
+	            // Alpha Beta Pruning
+	            if (beta <= alpha)
+	                break;
 			}
 		}
 		cout << "PiecesChecked: " << i+1 << "/" << turn.size() << endl;
@@ -277,9 +277,9 @@ int AI::Max_Value(Board board, int depth, int a, int b){
 				Temp_board.~Board();
 	            alpha = max(alpha, bestValue);
 
-				if(bestValue>=beta){
-						break;
-				}
+	            // Alpha Beta Pruning
+	            if (beta <= alpha)
+	                break;
 			}
 		}
 	}
@@ -328,9 +328,9 @@ int AI::Min_Value(Board board, int depth, int a, int b){
 				Temp_board.~Board();
 	            beta = min(beta, bestValue);
 
-				if(bestValue<=alpha){
-						break;
-				}
+	            // Alpha Beta Pruning
+	            if (beta <= alpha)
+	                break;
 			}
 		}
 	}
