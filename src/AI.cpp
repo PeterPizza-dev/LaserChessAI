@@ -28,7 +28,7 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 	//Temporary vectors to keep track of which turn it is
 	std::vector <piece*> turn;
 	std::vector <piece*> notTurn;
-	isBlue ? turn=board.BlueActive: turn=board.RedActive;
+	isBlue ? turn=board.BlueActive : turn=board.RedActive;
 	isBlue ? notTurn=board.RedActive : notTurn=board.BlueActive;
 	
 	//Terminal test
@@ -57,7 +57,6 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 				//Keeps track of current turn in the game, to search for new move
 				isBlue ? Temp_board.Blue_turn=true : Temp_board.Blue_turn=false ;
 				//Do the action
-				Temp_board.Do_action(i, j);
 				int res = Temp_board.Do_action(i, j);
 				//If result is -1, continue to next move
 				if (res != 0){
@@ -79,8 +78,7 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 		int bestValue = 1000;
 		//For every move possible - for each piece
 		//Piece
-		int num_piece =turn.size(); 
-		for(int i= 0; i < num_piece; i++){
+		for(int i= 0; i < notTurn.size(); i++){
 			//For each piece, total number of moves
 			for(int j=0; j<10; j++){
 				//Don't try and turn the king
