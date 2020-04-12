@@ -39,7 +39,7 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 	}
 	//This is the cut-off depth to the search, the depth is +1
 	//Because the first Max step is done in the find move function
-	if (depth == 2){
+	if (depth == 1){
 		return score;
 	}
 
@@ -66,11 +66,11 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 					continue;
 				}
 				//Else we update and evaluate board state
-					Temp_board.update_laser(false);
+					Temp_board.update_laser(true);
 					//Recursive call to miniMax
 					bestValue = max(bestValue, miniMax(Temp_board, depth+1, false));
 					Temp_board.~Board();
-					cout<<"Best value is: "<<bestValue<<endl;
+					//cout<<"Best value is: "<<bestValue<<endl;
 			}
 		}
 		return bestValue;
@@ -95,10 +95,10 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 				if (res != 0){
 					continue;
 				}else{
-					Temp_board.update_laser(false);
+					Temp_board.update_laser(true);
 					bestValue = min(bestValue, miniMax(Temp_board, depth+1, true));
 					Temp_board.~Board();
-					cout<<"MIN value is: "<<bestValue<<endl;
+					//cout<<"MIN value is: "<<bestValue<<endl;
 				}
 			}
 		}
@@ -136,7 +136,7 @@ Move AI::findMove(Board board){
 				continue;
 			}
 			else{
-				Temp_board.update_laser(false);
+				Temp_board.update_laser(true);
 				int minvalue = miniMax(Temp_board, 0, false);
 				int value = max(bestValue, minvalue);
 				Temp_board.~Board();
@@ -200,7 +200,7 @@ Move AI::findMove_AB(Board board){
 				continue;
 			}else{
 				//UNDO the move - piece back to ORG position.
-				Temp_board.update_laser(false);
+				Temp_board.update_laser(true);
 				int minvalue = Min_Value(Temp_board, 0, alpha, beta);
 				int value = max(bestValue,minvalue);
 				Temp_board.~Board();
@@ -269,7 +269,7 @@ int AI::Max_Value(Board board, int depth, int a, int b){
 			if (res != 0){
 				continue;
 			}else{
-				Temp_board.update_laser(false);
+				Temp_board.update_laser(true);
 				bestValue = max(bestValue, Min_Value(Temp_board, depth+1, alpha, beta));
 	            // Alpha Beta Pruning
 				Temp_board.~Board();
@@ -319,7 +319,7 @@ int AI::Min_Value(Board board, int depth, int a, int b){
 			if (res != 0){
 				continue;
 			}else{
-				Temp_board.update_laser(false);
+				Temp_board.update_laser(true);
 				bestValue = min(bestValue, Max_Value(Temp_board, depth+1, alpha, beta));
 	            // Alpha Beta Pruning
 				Temp_board.~Board();

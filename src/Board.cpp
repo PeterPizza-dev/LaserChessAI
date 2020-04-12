@@ -143,6 +143,7 @@ void Board::update_laser(bool player){
 	}
 	updateRedAndBlueActive();
 	calculate_score();
+	/*
 	if (player){
 		for (int i = 0; i < ROWS; i++) {
 			for (int j = 0; j < COLUMNS; j++) {
@@ -151,12 +152,14 @@ void Board::update_laser(bool player){
 			cout << "\n" << endl;
 		}
 	}
+	*/
 }
 
 void Board:: calculate_score(){
 	//Blue vs Red (Blue is max Red is min)
 	int BlueSum = 0;
 	int RedSum = 0;
+	int LaserSum = 0;
 	//The scores are as follows:
 	// 2 point - Defender
 	// 4 point - Deflector
@@ -184,6 +187,19 @@ void Board:: calculate_score(){
 			RedSum += 4;
 		}
 	}
+	for(int i=0; i< ROWS;i++){
+		for(int j=0; j<COLUMNS;j++){
+			LaserSum+=laser_track[i][j];
+		}
+	}
+	//Debugging
+	/*cout << "\n bluesum is:" << BlueSum;
+	cout << "\n redsum is:" << RedSum;
+	cout << "\n LaserSum is: " << LaserSum;
+	cout << "\n Blue_turn us" << Blue_turn;
+	*/
+	if(Blue_turn){BlueSum+LaserSum;}
+		else{RedSum+LaserSum;}
 	score = (RedSum-BlueSum);
 }
 //all pieces blue are negative. red pieces are positive
