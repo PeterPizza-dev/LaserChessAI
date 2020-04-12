@@ -246,6 +246,10 @@ int AI::Max_Value(Board board, int depth, int a, int b){
 	beta = b;
 	//Max depth
 	if (depth == 3){
+<<<<<<< HEAD
+=======
+
+>>>>>>> 04fe2bac4f74f9ada70d69e4c6a22ebb2f17f5f3
 		return score;
 	}
 	//Terminal test

@@ -93,6 +93,15 @@ void call_draw_functions(){
     glutSwapBuffers();
 }
 
+void call_draw_functions_with_laser(){
+    glClear(GL_COLOR_BUFFER_BIT);
+    drawBoard();
+    drawPieces(Game.getstate());
+    drawLaserTrack(Game.getLaserTrack(),Game.Blue_turn);
+    Game.update_board();
+    glutSwapBuffers();
+}
+
 void AI_move(){
         Move AI = computer_Red.findMove_AB(Game);
         Game.Do_action(AI.piece, AI.move);
@@ -111,6 +120,8 @@ void Display_callback(){
         switch(gameMode){
             case 1:
                 gameDone = Game.PlayerVsPlayer();
+                call_draw_functions_with_laser();
+                sleep(4);
                 if(gameDone){
                     call_draw_functions();
                 }
