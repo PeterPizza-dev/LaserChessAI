@@ -33,7 +33,6 @@ void call_draw_functions();
 bool gameDone = false;
 int gameMode;
 Board Game;
-AI computer_Red(false);
 //Template state
 
 int state[ROWS][COLUMNS] = 
@@ -94,8 +93,12 @@ void call_draw_functions(){
 }
 
 void AI_move(){
-        Move AI = computer_Red.findMove_AB(Game);
-        Game.Do_action(AI.piece, AI.move);
+        AI computer_Red(false);
+        int v = computer_Red.findMove_AB_2(Game,computer_Red.depth_cutoff,-2000,2000,true);
+        cout << "Value: " <<v << endl; 
+        cout << computer_Red.bestMove2.piece << endl;
+        cout << computer_Red.bestMove2.move << endl;
+        Game.Do_action(computer_Red.bestMove2.piece, computer_Red.bestMove2.move);
         Game.update_board();
         Game.update_laser(true);
         Game.update_board();

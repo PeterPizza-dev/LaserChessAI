@@ -108,7 +108,6 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 //Essentially just the first MAX step in miniMax
 //Made seperately to extract the move, which max the evaluation function
 Move AI::findMove(Board board){
-    auto start = chrono::high_resolution_clock::now();
     COUNT=0;
 	int bestValue = -1000;
 	Move bestMove;
@@ -153,26 +152,81 @@ Move AI::findMove(Board board){
 
 		cout << "PiecesChecked: " << i+1 << "/" << turn.size() << endl;
 	}
-    auto end = chrono::high_resolution_clock::now();
     // Calculating total time taken by the program.
-        double time_taken =
-          chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-
-        time_taken *= 1e-9;
-
-        cout << "Time taken by program is : " << fixed
-             << time_taken << setprecision(5);
-        cout << " sec" << endl;
 	cout<<"Best value is "<<bestValue<<endl;
 	cout<<"Total number of iterations is: "<<COUNT<<endl;
 	//Best move is returned
 	return bestMove;
 }
 
+
+int AI::findMove_AB_2(Board board, int depth, int alpha, int beta,bool MaxPlayer){
+	if (depth == 0 || board.score > 900 || board.score < -900){
+		return board.score;
+	}
+	if (MaxPlayer){
+		int value = -2000;
+		//for each possible action, find the new state.
+		for (int i=0; i<board.RedActive.size(); i++){
+			
+			for (int j=0;j<10;j++){
+				Board node = board;
+				if (!strcmp(typeid(board.RedActive[i][0]).name(),"4King") && j == 8){
+					break;
+				}
+				int res = node.Do_action(i,j);
+				if(res != 0){
+					//Don't check invalid moves
+					continue;
+				}else{
+					node.update_laser(false);
+					value = max(value,findMove_AB_2(node,depth-1,alpha,beta,false));
+					alpha = max(alpha,value);				
+					if (bestValMax < value && depth == depth_cutoff){
+						cout << "found new best" << endl;
+						bestValMax = value;
+						bestMove2.piece = i;
+						bestMove2.move = j;
+					}
+					if (alpha >= beta){
+						return value;
+					}
+				}
+			}
+		}
+		return value;
+	}else{
+		int value = 2000;
+		//for each possible action, find the new state.
+		for (int i=0; i<board.BlueActive.size(); i++){
+			for (int j=0;j<10;j++){
+				Board node = board;
+				if (!strcmp(typeid(board.BlueActive[i][0]).name(),"4King") && j == 8){
+					break;
+				}
+				int res = node.Do_action(i,j);
+				if(res != 0){
+					//Don't check invalid moves
+					continue;
+				}else{
+					node.update_laser(false);
+					value = min(value,findMove_AB_2(node,depth-1,alpha,beta,true));
+					beta = min(beta,value);
+					if (beta >= alpha){
+						return value;
+					}
+
+				}
+			}
+	}
+		return value;
+	}
+}
+
+
 //Implementation of the Alpha Beta pruning
 //FindMove function - first Max step of the minimax, using pruning
 Move AI::findMove_AB(Board board){
-    auto start = chrono::high_resolution_clock::now();
     COUNT=0;
 	int bestValue = -1000;
 	Move bestMove;
@@ -182,7 +236,7 @@ Move AI::findMove_AB(Board board){
 	isBlue ? turn=board.BlueActive : turn=board.RedActive;
 	//Initial alpha and beta's
 	alpha = -1000;
-	beta = 1000;
+	beta = 10;
 	//Piece
 	for(int i=0; i<turn.size(); i++){
 		//Move
@@ -202,7 +256,7 @@ Move AI::findMove_AB(Board board){
 			}else{
 				//UNDO the move - piece back to ORG position.
 				Temp_board.update_laser(false);
-				int minvalue = Min_Value(Temp_board, 0, alpha, beta);
+				int minvalue = Min_Value(Temp_board, 1, &alpha, &beta);
 				int value = max(bestValue,minvalue);
 				Temp_board.~Board();
 				if(value > bestValue){
@@ -210,40 +264,25 @@ Move AI::findMove_AB(Board board){
 					bestMove.move = j;
 					bestValue = value;
 				}
-				//Updating alpha
-	            //If the result of the move was is bigger than beta, then prune the rest
-				if(bestValue>=beta){
-					break;
-				}
-	            alpha = max(alpha, bestValue);
-
 			}
+			cout << "alpha: " << alpha << endl;
+			cout << "beta: " << beta << endl;
 		}
 		cout << "PiecesChecked: " << i+1 << "/" << turn.size() << endl;
 	}
-    auto end = chrono::high_resolution_clock::now();
     // Calculating total time taken by the program.
-        double time_taken =
-          chrono::duration_cast<chrono::nanoseconds>(end - start).count();
 
-        time_taken *= 1e-9;
-
-        cout << "Time taken by program is : " << fixed
-             << time_taken << setprecision(5);
-        cout << " sec" << endl;
 	cout<<"Best value is "<<bestValue<<endl;
 	cout<<"Total number of iterations is: "<<COUNT<<endl;
 	return bestMove;
 }
 
-int AI::Max_Value(Board board, int depth, int a, int b){
+int AI::Max_Value(Board board, int depth, int* alpha, int* beta){
 	int score = utility(board);
 	std::vector <piece*> turn;
 	isBlue ? turn=board.BlueActive: turn=board.RedActive;
 	
 	//Updating global alpha beta
-	alpha = a;
-	beta = b;
 	//Max depth
 	if (depth == 3){
 		return score;
@@ -274,10 +313,10 @@ int AI::Max_Value(Board board, int depth, int a, int b){
 				bestValue = max(bestValue, Min_Value(Temp_board, depth+1, alpha, beta));
 	            // Alpha Beta Pruning
 				Temp_board.~Board();
-				if(bestValue>=beta){
-						break;
+				if(bestValue>=*beta){
+						return bestValue;
 				}
-	            alpha = max(alpha, bestValue);
+	            *alpha = max(*alpha, bestValue);
 
 			}
 		}
@@ -287,12 +326,10 @@ int AI::Max_Value(Board board, int depth, int a, int b){
 
 
 
-int AI::Min_Value(Board board, int depth, int a, int b){
+int AI::Min_Value(Board board, int depth, int* alpha, int* beta){
 	int score = utility(board);
 	std::vector <piece*> notTurn;
 	//Updating global alpha beta
-	alpha=a;
-	beta=b;
 	isBlue ? notTurn=board.RedActive : notTurn=board.BlueActive;
 	//max depth
 	if (depth == 3){
@@ -325,11 +362,10 @@ int AI::Min_Value(Board board, int depth, int a, int b){
 				bestValue = min(bestValue, Max_Value(Temp_board, depth+1, alpha, beta));
 				Temp_board.~Board();
 	            // Alpha Beta Pruning
-
-				if(bestValue<=alpha){
-						break;
+				if(bestValue<=*alpha){
+						return bestValue;
 				}
-	            beta = min(beta, bestValue);
+	            *beta = min(*beta, bestValue);
 
 			}
 		}
