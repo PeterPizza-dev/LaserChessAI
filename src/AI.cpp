@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string.h>
 #include <vector>
+#include <iomanip>      // std::setprecision
 
 
 #include "AI.h"
@@ -48,6 +49,7 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 		for(int i=0; i<turn.size(); i++){
 			//For each piece, total number of moves
 			for(int j=0; j<10; j++){
+				COUNT++;
 				//don't try and turn the king(redundant move)
 				if (!strcmp(typeid(turn[i][0]).name(),"4King") && j == 8){
 					break;
@@ -81,6 +83,7 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 		for(int i= 0; i < notTurn.size(); i++){
 			//For each piece, total number of moves
 			for(int j=0; j<10; j++){
+				COUNT++;
 				//Don't try and turn the king
 				if (!strcmp(typeid(notTurn[i][0]).name(),"4King") && j == 8){
 					break;
@@ -105,6 +108,8 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 //Essentially just the first MAX step in miniMax
 //Made seperately to extract the move, which max the evaluation function
 Move AI::findMove(Board board){
+    auto start = chrono::high_resolution_clock::now();
+    COUNT=0;
 	int bestValue = -1000;
 	Move bestMove;
 	bestMove.piece = -1;
@@ -115,6 +120,8 @@ Move AI::findMove(Board board){
 	for(int i=0; i<turn.size(); i++){
 		//Move
 		for(int j=0; j<10; j++){
+			COUNT++;
+
 			//don't try and turn the king
 			if (!strcmp(typeid(turn[i][0]).name(),"4King") && j == 8){
 				break;
@@ -143,8 +150,21 @@ Move AI::findMove(Board board){
 				}
 			}
 		}
+
 		cout << "PiecesChecked: " << i+1 << "/" << turn.size() << endl;
 	}
+    auto end = chrono::high_resolution_clock::now();
+    // Calculating total time taken by the program.
+        double time_taken =
+          chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+
+        time_taken *= 1e-9;
+
+        cout << "Time taken by program is : " << fixed
+             << time_taken << setprecision(5);
+        cout << " sec" << endl;
+	cout<<"Best value is "<<bestValue<<endl;
+	cout<<"Total number of iterations is: "<<COUNT<<endl;
 	//Best move is returned
 	return bestMove;
 }
@@ -152,6 +172,8 @@ Move AI::findMove(Board board){
 //Implementation of the Alpha Beta pruning
 //FindMove function - first Max step of the minimax, using pruning
 Move AI::findMove_AB(Board board){
+    auto start = chrono::high_resolution_clock::now();
+    COUNT=0;
 	int bestValue = -1000;
 	Move bestMove;
 	bestMove.piece = -1;
@@ -165,6 +187,8 @@ Move AI::findMove_AB(Board board){
 	for(int i=0; i<turn.size(); i++){
 		//Move
 		for(int j=0; j<10; j++){
+			COUNT++;
+
 			//dont try and turn the king
 			if (!strcmp(typeid(turn[i][0]).name(),"4King") && j == 8){
 				break;
@@ -187,30 +211,41 @@ Move AI::findMove_AB(Board board){
 					bestValue = value;
 				}
 				//Updating alpha
-	            alpha = max(alpha, value);
 	            //If the result of the move was is bigger than beta, then prune the rest
-				if(value>=beta){
+				if(bestValue>=beta){
 					break;
 				}
+	            alpha = max(alpha, bestValue);
+
 			}
 		}
 		cout << "PiecesChecked: " << i+1 << "/" << turn.size() << endl;
 	}
+    auto end = chrono::high_resolution_clock::now();
+    // Calculating total time taken by the program.
+        double time_taken =
+          chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+
+        time_taken *= 1e-9;
+
+        cout << "Time taken by program is : " << fixed
+             << time_taken << setprecision(5);
+        cout << " sec" << endl;
+	cout<<"Best value is "<<bestValue<<endl;
+	cout<<"Total number of iterations is: "<<COUNT<<endl;
 	return bestMove;
 }
 
 int AI::Max_Value(Board board, int depth, int a, int b){
 	int score = utility(board);
 	std::vector <piece*> turn;
-	std::vector <piece*> notTurn;
 	isBlue ? turn=board.BlueActive: turn=board.RedActive;
-	isBlue ? notTurn=board.RedActive : notTurn=board.BlueActive;
 	
 	//Updating global alpha beta
 	alpha = a;
 	beta = b;
 	//Max depth
-	if (depth == 4){
+	if (depth == 3){
 		return score;
 	}
 	//Terminal test
@@ -223,13 +258,14 @@ int AI::Max_Value(Board board, int depth, int a, int b){
 	for(int i=0; i<turn.size(); i++){
 		//For each piece, total number of moves
 		for(int j=0; j<10; j++){
+			COUNT++;
+
 		//dont try and turn the king
 			if (!strcmp(typeid(turn[i][0]).name(),"4King") && j == 8){
 				break;
 			}
 			Board Temp_board = board;
 			isBlue ? Temp_board.Blue_turn=true : Temp_board.Blue_turn=false ;
-			Temp_board.Do_action(i, j);
 			int res = Temp_board.Do_action(i, j);
 			if (res != 0){
 				continue;
@@ -238,27 +274,28 @@ int AI::Max_Value(Board board, int depth, int a, int b){
 				bestValue = max(bestValue, Min_Value(Temp_board, depth+1, alpha, beta));
 	            // Alpha Beta Pruning
 				Temp_board.~Board();
-	            alpha = max(alpha, bestValue);
-
 				if(bestValue>=beta){
 						break;
 				}
+	            alpha = max(alpha, bestValue);
+
 			}
 		}
 	}
 	return bestValue;
 }
+
+
+
 int AI::Min_Value(Board board, int depth, int a, int b){
 	int score = utility(board);
-	std::vector <piece*> turn;
 	std::vector <piece*> notTurn;
 	//Updating global alpha beta
 	alpha=a;
 	beta=b;
-	isBlue ? turn=board.BlueActive: turn=board.RedActive;
 	isBlue ? notTurn=board.RedActive : notTurn=board.BlueActive;
 	//max depth
-	if (depth == 4){
+	if (depth == 3){
 		return score;
 	}
 	//terminal test
@@ -271,6 +308,8 @@ int AI::Min_Value(Board board, int depth, int a, int b){
 	for(int i=0; i<notTurn.size(); i++){
 		//For each piece, total number of moves
 		for(int j=0; j<10; j++){
+			COUNT++;
+
 			//Dont try and turn the king
 			if (!strcmp(typeid(notTurn[i][0]).name(),"4King") && j == 8){
 				break;
@@ -286,13 +325,16 @@ int AI::Min_Value(Board board, int depth, int a, int b){
 				bestValue = min(bestValue, Max_Value(Temp_board, depth+1, alpha, beta));
 				Temp_board.~Board();
 	            // Alpha Beta Pruning
-	            beta = min(beta, bestValue);
 
 				if(bestValue<=alpha){
 						break;
 				}
+	            beta = min(beta, bestValue);
+
 			}
 		}
 	}
 	return bestValue;
 }
+
+

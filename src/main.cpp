@@ -94,7 +94,7 @@ void call_draw_functions(){
 }
 
 void AI_move(){
-        Move AI = computer_Red.findMove(Game);
+        Move AI = computer_Red.findMove_AB(Game);
         Game.Do_action(AI.piece, AI.move);
         Game.update_board();
         Game.update_laser(true);

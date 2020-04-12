@@ -18,6 +18,7 @@ public:
 	//Alpha betas for pruning
 	int alpha;
 	int beta;
+	int COUNT;
 	//Evaluation function for the Game state
 	int utility(Board board);
 
