@@ -17,9 +17,11 @@ else
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)
         CFLAGS += -lGL -lGLU -lglut -lstdc++ 
+        outputname = laserChess_Linux
     endif
     ifeq ($(UNAME_S),Darwin)
         CFLAGS += -framework OpenGL -framework GLUT
+        outputname = laserChess_MAC
 	endif
 endif
 
@@ -28,7 +30,7 @@ COMPILE_SOURCES = game.cpp piece.cpp Board.cpp AI.cpp
 TARGET = main.cpp
 
 all: $(TARGET)
-	$(CC) $(TARGET) $(COMPILE_SOURCES) -o laserChess $(CFLAGS)
+	$(CC) $(TARGET) $(COMPILE_SOURCES) -o $(outputname) $(CFLAGS)
 
 clean:
-	$(RM) laserChess
+	$(RM) $(outputname)

@@ -111,8 +111,6 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 //Essentially just the first MAX step in miniMax
 //Made seperately to extract the move, which max the evaluation function
 Move AI::findMove(Board board){
-	auto start = chrono::high_resolution_clock::now();
-	COUNT = 0;
     int bestValue = -1000;
 	Move bestMove;
 	bestMove.piece = -1;
@@ -156,16 +154,6 @@ Move AI::findMove(Board board){
 
 		cout << "PiecesChecked: " << i+1 << "/" << turn.size() << endl;
 	}
-    // Calculating total time taken by the program.
-	auto end = chrono::high_resolution_clock::now();
-	// Calculating total time taken by the program.
-	double time_taken =
-	chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-	time_taken *= 1e-9;
-	        cout << "Time taken by program is : " << fixed
-	             << time_taken << setprecision(5);
-	        cout << " sec" << endl;
-			cout<<"Total number of iterations is: "<<COUNT<<endl;
 	cout<<"Best value is "<<bestValue<<endl;
 	//Best move is returned
 	return bestMove;
