@@ -595,7 +595,10 @@ void Board::playerChoiceDialog(){
 	if(Blue_turn){cout << "Player One (Blue turn)" <<endl;}
 	else{cout<< "Player Two (Red turn)" << endl;}
 	cout << "First choose what piece to move:" << endl;
-	bool col_choice,row_choice,chosing_piece,chose_the_move = true;
+	bool col_choice = true;
+	bool row_choice = true; 
+	bool chosing_piece = true;
+	bool chose_the_move = true;
 	int x,y,piece_index;
 	char col,row;
 	regex regex_pattern_col("[a-j]");
@@ -844,7 +847,6 @@ int Board::gameDialog(){
 	cout << "Welcome to Laser chess, choose what gamemode you will like:" << endl;
 	cout << "[1] Player vs. Player" << endl;
 	cout << "[2] Player vs. Computer" << endl;
-	cout << "[3] Computer vs. Computer" << endl;
 	int choice;
 	Game_done = false;
 	while(true){
@@ -867,38 +869,22 @@ int Board::gameDialog(){
 				clear();
 				return 2;
 
-			case 3:
-				//start player vs Computer
-				clear();
-				return 3;
-
 			default:
 				clear();
 				cout << "Not a possible option, please choose one of the following." << endl;
 				cout << "Player vs. Player [1]" << endl;
 				cout << "Player vs. Computer [2]" << endl;
-				cout << "Computer vs. Computer [3]" << endl;
 				break;
 		}
 	} 
 };
 
-bool Board::ComputerVsComputer(){
-	cout << "Lean back, and watch the computer win against itself" << endl;
-	cout << "blue size: " << BlueActive.size()<<endl;
-	cout << "red size: " <<RedActive.size()<<endl;
-	
-	return false;
-
-}
 
 bool Board::PlayerVsPlayer(){
 	playerChoiceDialog();
 	update_board();
 	update_laser(true);
 	update_board();
-	calculate_score();
-	cout << score << endl;
 
 	if(Blue_turn){Blue_turn=false;}
 	else{Blue_turn=true;}
@@ -910,14 +896,13 @@ bool Board::PlayerVsPlayer(){
 
 bool Board::PlayerVsComputer(){
 	//Debug of Do_action
+	std::cin.clear();
 	playerChoiceDialog();
 	update_board();
 	update_laser(true);
 	update_board();
-	calculate_score();
 	if(Blue_turn){Blue_turn=false;}
 	else{Blue_turn=true;}
-	clear();
 	return Game_done;
 
 }
@@ -937,4 +922,5 @@ int charToInt(char c){
 		if(c == chars[i]){ return i;}
 	}
 }
+
 

@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <regex>
 #include "AI.h"
+#include <iomanip>      // std::setprecision
 
 
 using namespace std;
@@ -33,7 +34,6 @@ void call_draw_functions();
 bool gameDone = false;
 int gameMode;
 Board Game;
-AI computer_Red(false);
 //Template state
 
 int state[ROWS][COLUMNS] = 
@@ -94,16 +94,17 @@ void call_draw_functions(){
 }
 
 void AI_move(){
-        Move AI = computer_Red.findMove_AB(Game);
-        Game.Do_action(AI.piece, AI.move);
+
+    	AI computer_Red(false);
+        computer_Red.findMove_AB_2(Game,computer_Red.depth_cutoff,-2000,2000,true);
+        Game.Do_action(computer_Red.bestMove2.piece, computer_Red.bestMove2.move);
+
         Game.update_board();
         Game.update_laser(true);
         Game.update_board();
         if(Game.Blue_turn){Game.Blue_turn=false;}
 	    else{Game.Blue_turn=true;}
 }
-
-
 
 void Display_callback(){
     if(!gameDone){
@@ -125,9 +126,6 @@ void Display_callback(){
                 if(gameDone){
                     call_draw_functions();
                 }
-                break;
-            case 3:
-                Game.ComputerVsComputer();
                 break;
             default:
                 break;
