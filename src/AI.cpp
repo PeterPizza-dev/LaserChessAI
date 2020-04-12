@@ -108,8 +108,8 @@ int AI::miniMax(Board board, int depth, bool MaxPlayer){
 //Essentially just the first MAX step in miniMax
 //Made seperately to extract the move, which max the evaluation function
 Move AI::findMove(Board board){
-    COUNT=0;
-	int bestValue = -1000;
+
+    int bestValue = -1000;
 	Move bestMove;
 	bestMove.piece = -1;
 	bestMove.move = -1;
@@ -159,19 +159,27 @@ Move AI::findMove(Board board){
 	return bestMove;
 }
 
-
 int AI::findMove_AB_2(Board board, int depth, int alpha, int beta,bool MaxPlayer){
+    auto start = chrono::high_resolution_clock::now();
+	COUNT++;
+	std::vector <piece*> turn;
+	std::vector <piece*> notTurn;
+	isBlue ? turn=board.BlueActive : turn=board.RedActive;
+	isBlue ? notTurn=board.RedActive : notTurn=board.BlueActive;
+
 	if (depth == 0 || board.score > 900 || board.score < -900){
 		return board.score;
 	}
 	if (MaxPlayer){
 		int value = -2000;
 		//for each possible action, find the new state.
-		for (int i=0; i<board.RedActive.size(); i++){
+		for (int i=0; i<turn.size(); i++){
 			
 			for (int j=0;j<10;j++){
 				Board node = board;
-				if (!strcmp(typeid(board.RedActive[i][0]).name(),"4King") && j == 8){
+				isBlue ? node.Blue_turn=true : node.Blue_turn=false ;
+
+				if (!strcmp(typeid(turn[i][0]).name(),"4King") && j == 8){
 					break;
 				}
 				int res = node.Do_action(i,j);
@@ -188,7 +196,7 @@ int AI::findMove_AB_2(Board board, int depth, int alpha, int beta,bool MaxPlayer
 						bestMove2.piece = i;
 						bestMove2.move = j;
 					}
-					if (alpha >= beta){
+					if (value >= beta){
 						return value;
 					}
 				}
@@ -198,10 +206,11 @@ int AI::findMove_AB_2(Board board, int depth, int alpha, int beta,bool MaxPlayer
 	}else{
 		int value = 2000;
 		//for each possible action, find the new state.
-		for (int i=0; i<board.BlueActive.size(); i++){
+		for (int i=0; i<notTurn.size(); i++){
 			for (int j=0;j<10;j++){
 				Board node = board;
-				if (!strcmp(typeid(board.BlueActive[i][0]).name(),"4King") && j == 8){
+				isBlue ? node.Blue_turn=false : node.Blue_turn=true ;
+				if (!strcmp(typeid(notTurn[i][0]).name(),"4King") && j == 8){
 					break;
 				}
 				int res = node.Do_action(i,j);
@@ -212,13 +221,25 @@ int AI::findMove_AB_2(Board board, int depth, int alpha, int beta,bool MaxPlayer
 					node.update_laser(false);
 					value = min(value,findMove_AB_2(node,depth-1,alpha,beta,true));
 					beta = min(beta,value);
-					if (beta >= alpha){
+					if (value<=alpha){
 						return value;
 					}
 
 				}
 			}
 	}
+		auto end = chrono::high_resolution_clock::now();
+		    // Calculating total time taken by the program.
+		        double time_taken =
+		          chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+
+		        time_taken *= 1e-9;
+
+		        cout << "Time taken by program is : " << fixed
+		             << time_taken << setprecision(5);
+		        cout << " sec" << endl;
+			cout<<"Total number of iterations is: "<<COUNT<<endl;
+
 		return value;
 	}
 }

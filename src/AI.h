@@ -19,7 +19,7 @@ public:
 	int alpha;
 	Move bestMove2;
 	int beta;
-	int COUNT;
+	int COUNT=0;
 	int bestMove;
 	int bestValMax = -2000;
 	int bestValMin = 2000;
