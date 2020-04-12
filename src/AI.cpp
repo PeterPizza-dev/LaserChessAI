@@ -166,15 +166,15 @@ int AI::findMove_AB_2(Board board, int depth, int alpha, int beta,bool MaxPlayer
 	std::vector <piece*> notTurn;
 	isBlue ? turn=board.BlueActive : turn=board.RedActive;
 	isBlue ? notTurn=board.RedActive : notTurn=board.BlueActive;
+	int score = utility(board);
 
-	if (depth == 0 || board.score > 900 || board.score < -900){
-		return board.score;
+	if (depth == 0 || score > 900 || score < -900){
+		return score;
 	}
 	if (MaxPlayer){
 		int value = -2000;
 		//for each possible action, find the new state.
 		for (int i=0; i<turn.size(); i++){
-			
 			for (int j=0;j<10;j++){
 				Board node = board;
 				isBlue ? node.Blue_turn=true : node.Blue_turn=false ;
@@ -232,7 +232,6 @@ int AI::findMove_AB_2(Board board, int depth, int alpha, int beta,bool MaxPlayer
 		    // Calculating total time taken by the program.
 		        double time_taken =
 		          chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-
 		        time_taken *= 1e-9;
 
 		        cout << "Time taken by program is : " << fixed
@@ -242,156 +241,6 @@ int AI::findMove_AB_2(Board board, int depth, int alpha, int beta,bool MaxPlayer
 
 		return value;
 	}
-}
-
-
-//Implementation of the Alpha Beta pruning
-//FindMove function - first Max step of the minimax, using pruning
-Move AI::findMove_AB(Board board){
-    COUNT=0;
-	int bestValue = -1000;
-	Move bestMove;
-	bestMove.piece = -1;
-	bestMove.move = -1;
-	std::vector <piece*> turn;
-	isBlue ? turn=board.BlueActive : turn=board.RedActive;
-	//Initial alpha and beta's
-	alpha = -1000;
-	beta = 10;
-	//Piece
-	for(int i=0; i<turn.size(); i++){
-		//Move
-		for(int j=0; j<10; j++){
-			COUNT++;
-
-			//dont try and turn the king
-			if (!strcmp(typeid(turn[i][0]).name(),"4King") && j == 8){
-				break;
-			}
-			Board Temp_board = board;
-			// Make the move
-			int res = Temp_board.Do_action(i, j);
-			if (res != 0){
-				//Don't check for invalid moves
-				continue;
-			}else{
-				//UNDO the move - piece back to ORG position.
-				Temp_board.update_laser(false);
-				int minvalue = Min_Value(Temp_board, 1, &alpha, &beta);
-				int value = max(bestValue,minvalue);
-				Temp_board.~Board();
-				if(value > bestValue){
-					bestMove.piece = i;
-					bestMove.move = j;
-					bestValue = value;
-				}
-			}
-			cout << "alpha: " << alpha << endl;
-			cout << "beta: " << beta << endl;
-		}
-		cout << "PiecesChecked: " << i+1 << "/" << turn.size() << endl;
-	}
-    // Calculating total time taken by the program.
-
-	cout<<"Best value is "<<bestValue<<endl;
-	cout<<"Total number of iterations is: "<<COUNT<<endl;
-	return bestMove;
-}
-
-int AI::Max_Value(Board board, int depth, int* alpha, int* beta){
-	int score = utility(board);
-	std::vector <piece*> turn;
-	isBlue ? turn=board.BlueActive: turn=board.RedActive;
-	
-	//Updating global alpha beta
-	//Max depth
-	if (depth == 3){
-		return score;
-	}
-	//Terminal test
-	if(score > 900 || score < -900){
-		return score;
-	}
-	int bestValue = -1000;
-	//For every move possible - for each piece
-	//Piece
-	for(int i=0; i<turn.size(); i++){
-		//For each piece, total number of moves
-		for(int j=0; j<10; j++){
-			COUNT++;
-
-		//dont try and turn the king
-			if (!strcmp(typeid(turn[i][0]).name(),"4King") && j == 8){
-				break;
-			}
-			Board Temp_board = board;
-			isBlue ? Temp_board.Blue_turn=true : Temp_board.Blue_turn=false ;
-			int res = Temp_board.Do_action(i, j);
-			if (res != 0){
-				continue;
-			}else{
-				Temp_board.update_laser(false);
-				bestValue = max(bestValue, Min_Value(Temp_board, depth+1, alpha, beta));
-	            // Alpha Beta Pruning
-				Temp_board.~Board();
-				if(bestValue>=*beta){
-						return bestValue;
-				}
-	            *alpha = max(*alpha, bestValue);
-
-			}
-		}
-	}
-	return bestValue;
-}
-
-
-
-int AI::Min_Value(Board board, int depth, int* alpha, int* beta){
-	int score = utility(board);
-	std::vector <piece*> notTurn;
-	//Updating global alpha beta
-	isBlue ? notTurn=board.RedActive : notTurn=board.BlueActive;
-	//max depth
-	if (depth == 3){
-		return score;
-	}
-	//terminal test
-	if(score > 900 || score < -900){
-		return score;
-	}
-	int bestValue = 1000;
-	//For every move possible - for each piece
-	//Piece
-	for(int i=0; i<notTurn.size(); i++){
-		//For each piece, total number of moves
-		for(int j=0; j<10; j++){
-			COUNT++;
-
-			//Dont try and turn the king
-			if (!strcmp(typeid(notTurn[i][0]).name(),"4King") && j == 8){
-				break;
-			}
-			Board Temp_board = board;
-			isBlue ? Temp_board.Blue_turn=false : Temp_board.Blue_turn=true;
-
-			int res = Temp_board.Do_action(i, j);
-			if (res != 0){
-				continue;
-			}else{
-				Temp_board.update_laser(false);
-				bestValue = min(bestValue, Max_Value(Temp_board, depth+1, alpha, beta));
-				Temp_board.~Board();
-	            // Alpha Beta Pruning
-				if(bestValue<=*alpha){
-						return bestValue;
-				}
-	            *beta = min(*beta, bestValue);
-
-			}
-		}
-	}
-	return bestValue;
 }
 
 
