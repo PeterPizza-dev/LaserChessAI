@@ -611,7 +611,10 @@ void Board::playerChoiceDialog(){
 	if(Blue_turn){cout << "Player One (Blue turn)" <<endl;}
 	else{cout<< "Player Two (Red turn)" << endl;}
 	cout << "First choose what piece to move:" << endl;
-	bool col_choice,row_choice,chosing_piece,chose_the_move = true;
+	bool col_choice = true;
+	bool row_choice = true; 
+	bool chosing_piece = true;
+	bool chose_the_move = true;
 	int x,y,piece_index;
 	char col,row;
 	regex regex_pattern_col("[a-j]");
@@ -884,7 +887,7 @@ int Board::gameDialog(){
 				return 2;
 
 			case 3:
-				//start player vs Computer
+				//start Computer vs Computer
 				clear();
 				return 3;
 
@@ -913,8 +916,6 @@ bool Board::PlayerVsPlayer(){
 	update_board();
 	update_laser(true);
 	update_board();
-	calculate_score();
-	cout << score << endl;
 
 	if(Blue_turn){Blue_turn=false;}
 	else{Blue_turn=true;}
@@ -926,14 +927,13 @@ bool Board::PlayerVsPlayer(){
 
 bool Board::PlayerVsComputer(){
 	//Debug of Do_action
+	std::cin.clear();
 	playerChoiceDialog();
 	update_board();
 	update_laser(true);
 	update_board();
-	calculate_score();
 	if(Blue_turn){Blue_turn=false;}
 	else{Blue_turn=true;}
-	clear();
 	return Game_done;
 
 }
