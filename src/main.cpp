@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <regex>
 #include "AI.h"
+#include <iomanip>      // std::setprecision
 
 
 using namespace std;
@@ -93,26 +94,10 @@ void call_draw_functions(){
 }
 
 void AI_move(){
-        AI computer_Red(false);
+
+    	AI computer_Red(false);
         computer_Red.findMove_AB_2(Game,computer_Red.depth_cutoff,-2000,2000,true);
         Game.Do_action(computer_Red.bestMove2.piece, computer_Red.bestMove2.move);
-        Game.update_board();
-        Game.update_laser(true);
-        Game.update_board();
-        if(Game.Blue_turn){Game.Blue_turn=false;}
-	    else{Game.Blue_turn=true;}
-}
-void AI_move_2(){
-        if(!Game.Blue_turn){
-            AI computer_Red(false);
-            computer_Red.findMove_AB_2(Game,computer_Red.depth_cutoff,-2000,2000,true);
-            Game.Do_action(computer_Red.bestMove2.piece, computer_Red.bestMove2.move);
-        }
-        else{
-            AI computer_Blue(true);
-            computer_Blue.findMove_AB_2(Game,computer_Blue.depth_cutoff,-2000,2000,true);
-            Game.Do_action(computer_Blue.bestMove2.piece, computer_Blue.bestMove2.move);
-        }
 
         Game.update_board();
         Game.update_laser(true);
@@ -141,10 +126,6 @@ void Display_callback(){
                 if(gameDone){
                     call_draw_functions();
                 }
-                break;
-            case 3:
-                Game.ComputerVsComputer();
-                AI_move_2();
                 break;
             default:
                 break;

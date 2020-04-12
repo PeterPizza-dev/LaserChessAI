@@ -847,7 +847,6 @@ int Board::gameDialog(){
 	cout << "Welcome to Laser chess, choose what gamemode you will like:" << endl;
 	cout << "[1] Player vs. Player" << endl;
 	cout << "[2] Player vs. Computer" << endl;
-	cout << "[3] Computer vs. Computer" << endl;
 	int choice;
 	Game_done = false;
 	while(true){
@@ -870,30 +869,16 @@ int Board::gameDialog(){
 				clear();
 				return 2;
 
-			case 3:
-				//start Computer vs Computer
-				clear();
-				return 3;
-
 			default:
 				clear();
 				cout << "Not a possible option, please choose one of the following." << endl;
 				cout << "Player vs. Player [1]" << endl;
 				cout << "Player vs. Computer [2]" << endl;
-				cout << "Computer vs. Computer [3]" << endl;
 				break;
 		}
 	} 
 };
 
-bool Board::ComputerVsComputer(){
-	cout << "Lean back, and watch the computer win against itself" << endl;
-	cout << "blue size: " << BlueActive.size()<<endl;
-	cout << "red size: " <<RedActive.size()<<endl;
-	
-	return false;
-
-}
 
 bool Board::PlayerVsPlayer(){
 	playerChoiceDialog();
@@ -937,4 +922,5 @@ int charToInt(char c){
 		if(c == chars[i]){ return i;}
 	}
 }
+
 

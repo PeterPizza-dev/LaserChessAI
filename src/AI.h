@@ -27,6 +27,7 @@ public:
 	//Evaluation function for the Game state
 	int utility(Board board);
 
+
 	//Normal adversial minimax search
 	int miniMax(Board board, int depth, bool MaxPlayer);
 	//First Max step of the Minimax, returns a type of struct Move

@@ -20,6 +20,7 @@ public:
 	bool Blue_win;
 	bool Game_done;
 	int score;
+
 	std::vector <piece*> BlueActive;
 	std::vector <piece*> RedActive;
 
@@ -29,10 +30,8 @@ public:
 	int gameDialog();
 	void init_ace(void);
 	void test_minmax(void);
-
 	int** getstate(void);
 	int** getLaserTrack(void);
-	bool ComputerVsComputer();
 	bool PlayerVsComputer();
 	bool PlayerVsPlayer();
 	void update_board();
